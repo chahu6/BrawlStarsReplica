@@ -22,10 +22,10 @@ public:
 
 private:
 	UFUNCTION(NetMulticast, Reliable)
-	void ResetRestedTime();
+	void MultiResetRestedTime();
 
 	UFUNCTION(NetMulticast, Reliable)
-	void ShowDamage(float Damage);
+	void MultiShowDamage(float Damage);
 
 private:
 	UPROPERTY()
@@ -33,9 +33,6 @@ private:
 
 	UPROPERTY()
 	float MaxHealth;
-
-	UPROPERTY()
-	float MaxWalkSpeed;
 
 	UPROPERTY()
 	float RestedTime;

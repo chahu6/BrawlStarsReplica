@@ -66,8 +66,18 @@ private:
 	void CheckNormalSkillReady();
 	void RechageNormalSkill();
 	void CheckUltimateSkillReady();
-private:
+
+	UFUNCTION(Server, Reliable)
+	void ServerSetSkillReleasable(const FSkillState& SkillReleasable);
+
+	UFUNCTION(Server, Reliable)
+	void ServerSetSkillAmountCurrent(float SkillAmountCurrent);
+
+public:
 	FSkillState SkillState;
+
+private:
+
 	float NormalSkillMax;
 	float NormalSkillCurrent;
 	float NormalSKillRechageTime;
@@ -77,10 +87,10 @@ private:
 	float UltimateEnergyCurrent;
 
 	bool bNormalButtonPressed;
-	bool bNormalButtonReleased;
+	bool bNormalButtonReleased = true;;
 
 	bool bUltimateButtonPressed;
-	bool bUltimateButtonReleased;
+	bool bUltimateButtonReleased = true;
 
 	FOnNormalSkillFinished NormalSkillFinished;
 	FOnUltimateRechage UltimateRechage;

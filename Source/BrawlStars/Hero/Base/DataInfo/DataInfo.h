@@ -169,4 +169,18 @@ USTRUCT(BlueprintType)
 struct FAimInfo
 {
 	GENERATED_USTRUCT_BODY()
+
+	bool bIsFlatAiming;
+
+	bool bIsLaunchAming;
+
+	bool bIsViewportCentrePointSet;
+
+	FVector2D ViewportCentrePoint;
+
+	FVector2D RealViewportCenterMousePoint;
+
+	float AimDistance;
+
+	float AimRotationYaw;
 };

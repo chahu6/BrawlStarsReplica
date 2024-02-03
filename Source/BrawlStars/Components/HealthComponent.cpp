@@ -18,12 +18,12 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UHealthComponent::ResetRestedTime_Implementation()
+void UHealthComponent::MultiResetRestedTime_Implementation()
 {
 	RestedTime = 0.0f;
 }
 
-void UHealthComponent::ShowDamage_Implementation(float Damage)
+void UHealthComponent::MultiShowDamage_Implementation(float Damage)
 {
 	//GetOwner()
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("ShowDamage"));

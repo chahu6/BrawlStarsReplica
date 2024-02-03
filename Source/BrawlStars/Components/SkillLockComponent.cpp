@@ -31,17 +31,77 @@ void USkillLockComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 bool USkillLockComponent::CheckPhysicsBottonNormal(bool bPress)
 {
+	if (bPress)
+	{
+		if (bNormalButtonReleased)
+		{
+			if (SkillState.bIsNormalEnd && SkillState.bIsUltimateEnd)
+			{
+				bNormalButtonPressed = true;
+				bNormalButtonReleased = false;
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
+	else
+	{
+		if (bNormalButtonPressed)
+		{
+			bNormalButtonPressed = false;
+			bNormalButtonReleased = true;
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	return false;
 }
 
 bool USkillLockComponent::CheckActivatableNormal()
 {
-	return false;
+	if (SkillState.bIsSkillPressEnable && SkillState.bIsNormalReady && SkillState.bIsNormalEnd && SkillState.bIsUltimateEnd)
+	{
+		SkillState.bIsNormalActivated = true;
+		if (GetWorld()->GetNetMode() == NM_Client)
+		{
+			ServerSetSkillReleasable(SkillState);
+		}
+	}
+	else
+	{
+		return false;
+	}
+
+	return true;
 }
 
 bool USkillLockComponent::CheckReleaseableNormal()
 {
-	return false;
+	if (SkillState.bIsSkillReleaseEnable && SkillState.bIsNormalReady && SkillState.bIsNormalActivated && SkillState.bIsNormalEnd && SkillState.bIsUltimateEnd)
+	{
+		NormalSkillCurrent -= 1.0f;
+		SkillState.bIsNormalActivated = false;
+		SkillState.bIsNormalEnd = false;
+		
+		if (GetWorld()->GetNetMode() == NM_Client)
+		{
+			ServerSetSkillReleasable(SkillState);
+			ServerSetSkillAmountCurrent(NormalSkillCurrent);
+		}
+	}
+	else
+	{
+		return false;
+	}
+
+	return true;
 }
 
 void USkillLockComponent::RechageUltimateSkill()
@@ -134,4 +194,14 @@ void USkillLockComponent::CheckUltimateSkillReady()
 	{
 		SkillState.bIsUltimateReady = false;
 	}
+}
+
+void USkillLockComponent::ServerSetSkillAmountCurrent_Implementation(float SkillAmountCurrent)
+{
+	NormalSkillCurrent = SkillAmountCurrent;
+}
+
+void USkillLockComponent::ServerSetSkillReleasable_Implementation(const FSkillState& SkillReleasable)
+{
+	SkillState = SkillReleasable;
 }

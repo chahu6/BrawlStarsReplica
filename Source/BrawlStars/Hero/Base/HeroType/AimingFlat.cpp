@@ -4,6 +4,9 @@
 #include "../DataInfo/DataInfo.h"
 #include "Kismet/GameplayStatics.h"
 #include "../HeroBase.h"
+#include "Net/UnrealNetwork.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "BrawlStars/Components/SkillLockComponent.h"
 
 AAimingFlat::AAimingFlat()
 {
@@ -59,10 +62,64 @@ void AAimingFlat::BeginPlay()
 	InitAimingScreenPoint();
 }
 
+void AAimingFlat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AAimingFlat, AimingInfo);
+}
+
 void AAimingFlat::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (IsValid(Hero))
+	{
+		FlatAimingManager();
+	}
+}
+
+void AAimingFlat::CenterMousePosition()
+{
+	if (NotAIControlled())
+	{
+		int64 X = FMath::TruncToInt(AimingInfo.ViewportCentrePoint.X);
+		int64 Y = FMath::TruncToInt(AimingInfo.ViewportCentrePoint.Y);
+		UGameplayStatics::GetPlayerController(this, 0)->SetMouseLocation(X, Y);
+	}
+}
+
+void AAimingFlat::SkillMontageStop()
+{
+	if (IsValid(Hero))
+	{
+		Hero->GetMesh()->GetAnimInstance()->Montage_Stop(0.0f);
+	}
+}
+
+void AAimingFlat::SetHeroSkillReleaseRotation(float AddModify)
+{
+	float Yaw = AimingInfo.AimRotationYaw + AddModify;
+	if (IsValid(Hero))
+	{
+		Hero->SetActorRotation(FRotator(0.0, Yaw, 0.0));
+	}
+}
+
+void AAimingFlat::LockMovementOrientRotation()
+{
+	if (IsValid(Hero))
+	{
+		Hero->GetCharacterMovement()->bOrientRotationToMovement = false;
+	}
+}
+
+void AAimingFlat::ClientPlayMontage(UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName)
+{
+	if (IsValid(Hero))
+	{
+		Hero->PlayAnimMontage(AnimMontage, InPlayRate, StartSectionName);
+	}
 }
 
 void AAimingFlat::InitAimingScreenPoint()
@@ -71,6 +128,62 @@ void AAimingFlat::InitAimingScreenPoint()
 	if (bIsControlled)
 	{
 
+	}
+}
+
+bool AAimingFlat::NotAIControlled()
+{
+	AActor* MyOwner = GetOwner();
+	if (IsValid(MyOwner))
+	{
+		APawn* Instig = MyOwner->GetInstigator();
+		if (Instig)
+		{
+			return !Instig->IsBotControlled();
+		}
+	}
+
+	return false;
+}
+
+void AAimingFlat::FlatAimingManager()
+{
+	if (Hero->IsLocallyControlled())
+	{
+		if (AimingInfo.bIsFlatAiming)
+		{
+			UpdateDecalShap();
+		}
+	}
+}
+
+void AAimingFlat::UpdateDecalShap()
+{
+	USkillLockComponent* SkillLockComponent = Hero->GetComponentByClass<USkillLockComponent>();
+	if (SkillLockComponent)
+	{
+		float Angle;
+		float Distance;
+
+		if (SkillLockComponent->SkillState.bIsNormalActivated)
+		{
+			Angle = DecalAngleNormal / 360.0f;
+			Distance = DecalDistanceNormal;
+		}
+		else
+		{
+			Angle = DecalDistanceUltimate / 360.0f;
+			Distance = DecalDistanceUltimate;
+		}
+
+		if (DecalAngleNormal == 0.0f)
+		{
+			UMaterial* Decal_Rectangle = LoadObject<UMaterial>(this, TEXT(""));
+			if (Decal_Rectangle)
+			{
+				AimingDecal->SetDecalMaterial(Decal_Rectangle);
+			}
+		}
 	}
 }
 

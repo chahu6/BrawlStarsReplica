@@ -33,7 +33,6 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Destroyed() override;
 
-
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:	
@@ -50,7 +49,9 @@ protected:
 	// 技能相关
 	virtual void ActiveNormalSkill() {};
 	virtual void ReleaseNormalSkill() {};
-	virtual void PlayHeroSpeakLine() {};
+
+	virtual void ActiveUltimateSkill() {};
+	virtual void ReleaseUltimateSkill() {};
 
 	// 死亡
 	void HeroDie();
@@ -58,7 +59,7 @@ protected:
 
 	// 初始化团队类型
 	UFUNCTION(Server, Reliable)
-	void InitTeamType();
+	void ServerInitTeamType();
 
 protected:	
 	// 按键相关函数
@@ -105,7 +106,7 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UWidgetComponent* HealthWidget;
 
-private:
+protected:
 	UPROPERTY(EditAnywhere)
 	UParticleSystem* ElimEffect;
 
@@ -117,6 +118,9 @@ private:
 
 	UPROPERTY(Replicated)
 	FAimingManager AimingManager;
+
+	UPROPERTY()
+	FSkillMontage HeroSkills;
 
 	UPROPERTY()
 	FHeroSpeakLine SpeakLine;

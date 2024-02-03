@@ -80,7 +80,7 @@ void AHeroBase::OnConstruction(const FTransform& Transform)
 				WeaponType = HeroInfo->WeaponType;
 				HealthComponent->CurrentHealth = HeroInfo->DefaultHealth;
 				HealthComponent->MaxHealth = HeroInfo->DefaultHealth;
-				HealthComponent->MaxWalkSpeed = HeroInfo->MoveSpeed;
+				GetCharacterMovement()->MaxWalkSpeed = HeroInfo->MoveSpeed;
 			}
 		}
 	}
@@ -149,7 +149,7 @@ void AHeroBase::BeginPlay()
 
 	//OnTakeAnyDamage.AddDynamic(this, &AHeroBase::ShowDamageNum);
 
-	InitTeamType();
+	ServerInitTeamType();
 
 	UGameplayStatics::GetPlayerController(this, 0)->SetShowMouseCursor(true);
 
@@ -242,7 +242,7 @@ void AHeroBase::SaveUltimateCurrent()
 {
 }
 
-void AHeroBase::InitTeamType_Implementation()
+void AHeroBase::ServerInitTeamType_Implementation()
 {
 	DelayGetPlayerStateCallBack();
 }
@@ -250,10 +250,10 @@ void AHeroBase::InitTeamType_Implementation()
 void AHeroBase::NormalSkillButtonOnPressed()
 {
 	// 物理检查
-	if (SkillLockComponent->CheckPhysicsBottonNormal(true))
+	//if (SkillLockComponent->CheckPhysicsBottonNormal(true))
 	{
 		// 充能检查
-		if (SkillLockComponent->CheckActivatableNormal())
+		//if (SkillLockComponent->CheckActivatableNormal())
 		{
 			ActiveNormalSkill();
 		}
@@ -263,16 +263,16 @@ void AHeroBase::NormalSkillButtonOnPressed()
 
 void AHeroBase::NormalSkillButtonOnReleased()
 {
-	if (SkillLockComponent->CheckPhysicsBottonNormal(true))
+	if (SkillLockComponent->CheckPhysicsBottonNormal(false))
 	{
 		if (SkillLockComponent->CheckReleaseableNormal())
 		{
 			// 释放技能
 			ReleaseNormalSkill();
 			// 释放技能打断回血
-			HealthComponent->ResetRestedTime();
+			HealthComponent->MultiResetRestedTime();
 			// 释放技能时的台词
-			PlayHeroSpeakLine();
+			PlayHeroSpeakLine(EHeroSpeakLineType::ET_NormalSkill);
 		}
 	}
 }
@@ -326,8 +326,8 @@ void AHeroBase::InitHealthWidget()
 
 void AHeroBase::ShowDamageNum(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
-	HealthComponent->ShowDamage(Damage);
-	HealthComponent->ResetRestedTime();
+	HealthComponent->MultiShowDamage(Damage);
+	HealthComponent->MultiResetRestedTime();
 
 	PlayHeroSpeakLine(EHeroSpeakLineType::ET_Hurt);
 }
@@ -378,7 +378,11 @@ void AHeroBase::PlayFSoundsWithOdds(float Odds, const TMap<EHeroSpeakLineType, F
 	{
 		const auto Itr = FSounds.CreateConstIterator();
 
-		UGameplayStatics::PlaySound2D(this, RandomSound(Itr.Value().Sounds), 0.3f);
+		/*USoundBase* Sound = RandomSound(Itr.Value().Sounds);
+		if (Sound)
+		{
+			UGameplayStatics::PlaySound2D(this, Sound, 0.3f);
+		}*/
 	}
 }
 

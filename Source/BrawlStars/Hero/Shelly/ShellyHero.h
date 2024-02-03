@@ -12,5 +12,7 @@ class BRAWLSTARS_API AShellyHero : public AFlatSkillOnly
 {
 	GENERATED_BODY()
 public:
+	AShellyHero();
 
+	virtual void OnConstruction(const FTransform& Transform) override;
 };

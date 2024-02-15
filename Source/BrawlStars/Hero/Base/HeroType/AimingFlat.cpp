@@ -7,6 +7,9 @@
 #include "Net/UnrealNetwork.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "BrawlStars/Components/SkillLockComponent.h"
+#include "Kismet/KismetMaterialLibrary.h"
+#include "Materials/MaterialParameterCollection.h"
+#include "BrawlStars/Components/GetActorScreenPointComponent.h"
 
 AAimingFlat::AAimingFlat()
 {
@@ -15,6 +18,8 @@ AAimingFlat::AAimingFlat()
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
 	AimingDecal = CreateDefaultSubobject<UDecalComponent>(TEXT("AimingDecal"));
 	AimingDecal->SetupAttachment(RootComponent);
+
+	GetActorScreenPointComponent = CreateDefaultSubobject<UGetActorScreenPointComponent>(TEXT("GetActorScreenPoint"));
 }
 
 void AAimingFlat::OnConstruction(const FTransform& Transform)
@@ -47,7 +52,11 @@ void AAimingFlat::OnConstruction(const FTransform& Transform)
 	}
 
 	// 材质
-	//AimingDecal->SetDecalMaterial();
+	UMaterialInterface* DecalMaterial = LoadObject<UMaterialInterface>(this, TEXT("/Script/Engine.Material'/Game/Hero/Base/Asset/M_Decal_FlatAim_Rectangle.M_Decal_FlatAim_Rectangle'"));
+	if (DecalMaterial)
+	{
+		AimingDecal->SetDecalMaterial(DecalMaterial);	
+	}
 	AimingDecal->SetRelativeRotation(FRotator(90.0, 0.0, 0.0));
 	AimingDecal->SetRelativeScale3D(FVector(1.0, 4.0, 4.0));
 	AimingDecal->SetVisibility(false);
@@ -127,7 +136,8 @@ void AAimingFlat::InitAimingScreenPoint()
 	bool bIsControlled = !Hero->IsBotControlled() && Hero->IsLocallyControlled();
 	if (bIsControlled)
 	{
-
+		FLatentActionInfo LatentInfo(0, FMath::Rand(), TEXT("ViewportFinish"), this); // 等待Viewport初始化完成，不然位置就有问题
+		UKismetSystemLibrary::Delay(this, 0.2f, LatentInfo);
 	}
 }
 
@@ -178,12 +188,53 @@ void AAimingFlat::UpdateDecalShap()
 
 		if (DecalAngleNormal == 0.0f)
 		{
-			UMaterial* Decal_Rectangle = LoadObject<UMaterial>(this, TEXT(""));
+			UMaterialInterface* Decal_Rectangle = LoadObject<UMaterialInterface>(this, TEXT("/Script/Engine.Material'/Game/Hero/Base/Asset/M_Decal_FlatAim_Rectangle.M_Decal_FlatAim_Rectangle'"));
 			if (Decal_Rectangle)
 			{
 				AimingDecal->SetDecalMaterial(Decal_Rectangle);
+				UMaterialParameterCollection* Aim_Decal = LoadObject<UMaterialParameterCollection>(this, TEXT("/Script/Engine.MaterialParameterCollection'/Game/Hero/Base/Asset/MPC_Aim_Decal.MPC_Aim_Decal'"));
+				if (Aim_Decal)
+				{
+					UKismetMaterialLibrary::SetScalarParameterValue(this, Aim_Decal, TEXT("Angle"), 0.0f);
+					UKismetMaterialLibrary::SetScalarParameterValue(this, Aim_Decal, TEXT("Distance"), 1.0f - (Distance / 1400.0f) - 0.3f);
+				}
 			}
 		}
+		else
+		{
+			UMaterialInterface* Decal_Sector = LoadObject<UMaterialInterface>(this, TEXT("/Script/Engine.Material'/Game/Hero/Base/Asset/M_Decal_FlatAim_Sector.M_Decal_FlatAim_Sector'"));
+			if (Decal_Sector)
+			{
+				AimingDecal->SetDecalMaterial(Decal_Sector);
+				UMaterialParameterCollection* Aim_Decal = LoadObject<UMaterialParameterCollection>(this, TEXT("/Script/Engine.MaterialParameterCollection'/Game/Hero/Base/Asset/MPC_Aim_Decal.MPC_Aim_Decal'"));
+				if (Aim_Decal)
+				{
+					UKismetMaterialLibrary::SetScalarParameterValue(this, Aim_Decal, TEXT("Angle"), Angle);
+					UKismetMaterialLibrary::SetScalarParameterValue(this, Aim_Decal, TEXT("Distance"), Distance / 1500.0f + 0.3f);
+				}
+			}
+		}
+	}
+}
+
+void AAimingFlat::InitActorScreenPoint()
+{
+	FVector2D ActorScreenPoint, ActorScreenMousePoint;
+	if (GetActorScreenPointComponent->GetActorScreenPoint(ActorScreenPoint, ActorScreenMousePoint))
+	{
+		GEngine->AddOnScreenDebugMessage(3, 5.0f, FColor::Red, FString::Printf(TEXT("Actor: %s, Mouse: %s"), *ActorScreenPoint.ToString(), *ActorScreenMousePoint.ToString()));
+
+		AimingInfo.bIsViewportCentrePointSet = true;
+		AimingInfo.ViewportCentrePoint = ActorScreenPoint;
+		AimingInfo.RealViewportCenterMousePoint = ActorScreenMousePoint;
+	}
+}
+
+void AAimingFlat::ViewportFinish()
+{
+	if (!AimingInfo.bIsViewportCentrePointSet)
+	{
+		InitActorScreenPoint();
 	}
 }
 

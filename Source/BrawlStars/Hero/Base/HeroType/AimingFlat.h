@@ -6,6 +6,7 @@
 #include "AimingFlat.generated.h"
 
 class AHeroBase;
+class UGetActorScreenPointComponent;
 
 UCLASS()
 class BRAWLSTARS_API AAimingFlat : public AActor
@@ -45,9 +46,17 @@ private:
 
 	void UpdateDecalShap();
 
+	void InitActorScreenPoint();
+
+	UFUNCTION()
+	void ViewportFinish();
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	UDecalComponent* AimingDecal;
+
+	UPROPERTY(VisibleAnywhere)
+	UGetActorScreenPointComponent* GetActorScreenPointComponent;
 
 private:
 	UPROPERTY()

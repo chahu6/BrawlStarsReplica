@@ -263,9 +263,9 @@ void AHeroBase::NormalSkillButtonOnPressed()
 
 void AHeroBase::NormalSkillButtonOnReleased()
 {
-	if (SkillLockComponent->CheckPhysicsBottonNormal(false))
+	//if (SkillLockComponent->CheckPhysicsBottonNormal(false))
 	{
-		if (SkillLockComponent->CheckReleaseableNormal())
+		//if (SkillLockComponent->CheckReleaseableNormal())
 		{
 			// ÊÍ·Å¼¼ÄÜ
 			ReleaseNormalSkill();

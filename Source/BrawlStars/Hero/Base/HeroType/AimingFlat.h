@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "../DataInfo/DataInfo.h"
+#include "BrawlStars/Utils/DoOnce.h"
 #include "AimingFlat.generated.h"
 
 class AHeroBase;
@@ -46,6 +47,8 @@ private:
 
 	void UpdateDecalShap();
 
+	void UpdateAimDistanceAndRotation();
+
 	void InitActorScreenPoint();
 
 	UFUNCTION()
@@ -76,4 +79,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Properties")
 	float DecalDistanceUltimate;
+
+private:
+	FDoOnce DoOnce;
 };

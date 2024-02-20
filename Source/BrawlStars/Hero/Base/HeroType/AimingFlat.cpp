@@ -10,6 +10,9 @@
 #include "Kismet/KismetMaterialLibrary.h"
 #include "Materials/MaterialParameterCollection.h"
 #include "BrawlStars/Components/GetActorScreenPointComponent.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "BrawlStars/Controller/Game/GameBaseController.h"
 
 AAimingFlat::AAimingFlat()
 {
@@ -163,6 +166,22 @@ void AAimingFlat::FlatAimingManager()
 		if (AimingInfo.bIsFlatAiming)
 		{
 			UpdateDecalShap();
+			UpdateAimDistanceAndRotation();
+			if (NotAIControlled() && FMath::Abs(AimingInfo.AimDistance) > 1.0f)
+			{
+				AimingDecal->SetVisibility(true);
+				AimingDecal->SetWorldRotation(FRotator(90.0, AimingInfo.AimRotationYaw, 180.0));
+
+				DoOnce.Reset();
+			}
+		}
+		else
+		{
+			DoOnce.Execute([this]()
+			{
+				AimingInfo.AimDistance = 0.0f;
+				AimingDecal->SetVisibility(false);
+			});
 		}
 	}
 }
@@ -217,13 +236,47 @@ void AAimingFlat::UpdateDecalShap()
 	}
 }
 
+void AAimingFlat::UpdateAimDistanceAndRotation()
+{
+	if (NotAIControlled())
+	{
+		FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(this);
+		if (!AimingInfo.RealViewportCenterMousePoint.Equals(MousePosition, 0.0001))
+		{
+			FVector2D Temp_Position = (AimingInfo.RealViewportCenterMousePoint - MousePosition);
+			float NewAimDistance = Temp_Position.Size();
+			float NewAimRotationZ = UKismetMathLibrary::DegAtan2(Temp_Position.X * -1.0f, Temp_Position.Y);
+			AGameBaseController* GameBase = Cast<AGameBaseController>(UGameplayStatics::GetPlayerController(this, 0));
+			if (GameBase)
+			{
+				if (GameBase->GetTeamType() == ETeamType::ET_TeamB)
+				{
+					NewAimRotationZ += 180.0f;
+				}
+			}
+			float AimRotationZ = AimingInfo.AimRotationYaw;
+
+			if (FMath::Abs(AimRotationZ - NewAimRotationZ) < 100.0f)
+			{
+				NewAimRotationZ = FMath::FInterpTo(AimRotationZ, NewAimRotationZ, UGameplayStatics::GetWorldDeltaSeconds(this), 40.0f);
+			}
+
+			AimingInfo.AimDistance = NewAimDistance;
+			AimingInfo.AimRotationYaw = NewAimRotationZ;
+			//UE_LOG(LogTemp, Warning, TEXT("Distance: %f, RotationZ: %f"), NewAimDistance, NewAimRotationZ);
+			if (!HasAuthority())
+			{
+				// 。。。。。。
+			}
+		}
+	}
+}
+
 void AAimingFlat::InitActorScreenPoint()
 {
 	FVector2D ActorScreenPoint, ActorScreenMousePoint;
 	if (GetActorScreenPointComponent->GetActorScreenPoint(ActorScreenPoint, ActorScreenMousePoint))
 	{
-		GEngine->AddOnScreenDebugMessage(3, 5.0f, FColor::Red, FString::Printf(TEXT("Actor: %s, Mouse: %s"), *ActorScreenPoint.ToString(), *ActorScreenMousePoint.ToString()));
-
 		AimingInfo.bIsViewportCentrePointSet = true;
 		AimingInfo.ViewportCentrePoint = ActorScreenPoint;
 		AimingInfo.RealViewportCenterMousePoint = ActorScreenMousePoint;

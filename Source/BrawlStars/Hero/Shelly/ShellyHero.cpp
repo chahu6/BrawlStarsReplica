@@ -2,7 +2,6 @@
 
 AShellyHero::AShellyHero()
 {
-
 }
 
 void AShellyHero::OnConstruction(const FTransform& Transform)

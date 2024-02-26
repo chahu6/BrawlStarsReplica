@@ -37,6 +37,8 @@ public:
 
 	void ClientPlayMontage(UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName);
 
+	void ReleaseFlatSkill(const TSubclassOf<ASkillBase>& SkillType);
+
 protected:
 	void InitAimingScreenPoint();
 

@@ -81,6 +81,7 @@ void AHeroBase::OnConstruction(const FTransform& Transform)
 				HealthComponent->CurrentHealth = HeroInfo->DefaultHealth;
 				HealthComponent->MaxHealth = HeroInfo->DefaultHealth;
 				GetCharacterMovement()->MaxWalkSpeed = HeroInfo->MoveSpeed;
+				break;
 			}
 		}
 	}
@@ -104,6 +105,7 @@ void AHeroBase::OnConstruction(const FTransform& Transform)
 				{
 					SkillLockComponent->UltimateEnergyDefault = SkillInfo->SkillRechage;
 				}
+				break;
 			}
 		}
 	}
@@ -118,7 +120,8 @@ void AHeroBase::OnConstruction(const FTransform& Transform)
 			FSkillMontage* SkillMontage = DataTable->FindRow<FSkillMontage>(Elem, TEXT("AHeroBase"));
 			if (GetClass() == SkillMontage->HeroType)
 			{
-
+				HeroSkills = *SkillMontage;
+				break;
 			}
 		}
 	}
@@ -134,6 +137,7 @@ void AHeroBase::OnConstruction(const FTransform& Transform)
 			if (GetClass() == HeroSpeakLine->HeroType)
 			{
 				SpeakLine = *HeroSpeakLine;
+				break;
 			}
 		}
 	}

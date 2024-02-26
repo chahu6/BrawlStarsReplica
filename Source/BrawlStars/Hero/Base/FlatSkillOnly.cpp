@@ -44,4 +44,6 @@ void AFlatSkillOnly::ReleaseSkill(float ReleaseRotationOffset, bool bNormalSkill
 	AimingManager.FlatAimingManager->LockMovementOrientRotation();
 	AimingManager.FlatAimingManager->ClientPlayMontage(Montage, 1.0f, MontageSection);
 	//GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &AFlatSkillOnly::ReleaseFlatSkill);
+
+	AimingManager.FlatAimingManager->ReleaseFlatSkill(SkillType);
 }

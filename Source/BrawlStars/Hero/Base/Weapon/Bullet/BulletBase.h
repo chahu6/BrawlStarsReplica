@@ -16,9 +16,15 @@ protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+public:
+	virtual void PostInitializeComponents() override;
+
+private:
+	UFUNCTION()
+	void OnCubeBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -32,4 +38,23 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* BulletHead;
+
+	UPROPERTY(EditAnywhere)
+	USoundBase* BulletSoundEffect;
+
+	UPROPERTY(EditAnywhere)
+	USoundAttenuation* BulletSoundAttenuation;
+
+private:
+	UPROPERTY()
+	float Damage;
+
+	UPROPERTY()
+	bool bIsLongLive;
+
+	UPROPERTY()
+	bool bSenceDestructible;
+
+	UPROPERTY()
+	float BulletSoundVolume;
 };

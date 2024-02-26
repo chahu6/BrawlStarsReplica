@@ -27,6 +27,4 @@ protected:
 
 private:
 	void ReleaseSkill(float ReleaseRotationOffset, bool bNormalSkill, UAnimMontage* Montage, FName MontageSection, const TSubclassOf<ASkillBase>& SkillType);
-
-	void ReleaseFlatSkill();
 };

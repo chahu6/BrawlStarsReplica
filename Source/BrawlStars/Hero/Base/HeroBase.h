@@ -134,4 +134,5 @@ protected:
 public:
 	FORCEINLINE bool RandomOdds(float Odds) const { return FMath::TruncToFloat(Odds * 100) > FMath::RandRange(0, 100); }
 	FORCEINLINE USoundBase* RandomSound(const TArray<USoundBase*>& Sounds) const { return Sounds[FMath::RandHelper(Sounds.Num())]; }
+	FORCEINLINE AWeaponBase* GetWeapon() { return Weapon; }
 };

@@ -16,4 +16,7 @@ class BRAWLSTARS_API AGM_GameBase : public AGameModeBase
 	
 protected:
 	virtual void OnPostLogin(AController* NewPlayer) override;
+
+public:
+	void PlayerInputDisable();
 };

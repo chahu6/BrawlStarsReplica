@@ -13,6 +13,9 @@
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "BrawlStars/Controller/Game/GameBaseController.h"
+#include "../Weapon/WeaponBase.h"
+#include "Components/CapsuleComponent.h"
+#include "BrawlStars/Hero/Base/Skill/SkillBase.h"
 
 AAimingFlat::AAimingFlat()
 {
@@ -131,6 +134,24 @@ void AAimingFlat::ClientPlayMontage(UAnimMontage* AnimMontage, float InPlayRate,
 	if (IsValid(Hero))
 	{
 		Hero->PlayAnimMontage(AnimMontage, InPlayRate, StartSectionName);
+	}
+}
+
+void AAimingFlat::ReleaseFlatSkill(const TSubclassOf<ASkillBase>& SkillType)
+{
+	if (IsValid(Hero))
+	{
+		AWeaponBase* Weapon = Hero->GetWeapon();
+		if (IsValid(Weapon))
+		{
+			FVector SocketLocation = Weapon->GetRootComponent()->GetSocketLocation(FName("Muzzle"));
+
+			FActorSpawnParameters SpawnParameters;
+			SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+			SpawnParameters.Instigator = Hero;
+			GetWorld()->SpawnActor<ASkillBase>(SkillType, SocketLocation, Hero->GetCapsuleComponent()->GetForwardVector().ToOrientationRotator(), SpawnParameters);
+			UE_LOG(LogTemp, Warning, TEXT("Spawn Bullet"));
+		}
 	}
 }
 

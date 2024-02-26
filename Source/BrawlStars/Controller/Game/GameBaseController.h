@@ -15,6 +15,10 @@ class BRAWLSTARS_API AGameBaseController : public APlayerController
 {
 	GENERATED_BODY()
 	
+public:
+	void PlayerControllerInputDisable();
+	void PlayerControllerInputEnable();
+
 private:
 	ETeamType TeamType;
 

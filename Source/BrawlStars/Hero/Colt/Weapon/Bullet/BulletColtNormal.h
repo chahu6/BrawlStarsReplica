@@ -12,4 +12,5 @@ class BRAWLSTARS_API ABulletColtNormal : public ABulletBase
 {
 	GENERATED_BODY()
 	
+private:
 };

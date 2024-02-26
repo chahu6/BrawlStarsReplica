@@ -139,6 +139,21 @@ struct FSounds
 };
 
 USTRUCT(BlueprintType)
+struct FBulletSoundEffect : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<ABulletBase> BulletType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	USoundBase* BulletSoundEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float BulletSoundVolume;
+};
+
+USTRUCT(BlueprintType)
 struct FHeroSpeakLine : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()

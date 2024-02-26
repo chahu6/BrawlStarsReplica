@@ -4,6 +4,8 @@
 #include "GameFramework/Actor.h"
 #include "SkillBase.generated.h"
 
+class ABulletBase;
+
 UCLASS()
 class BRAWLSTARS_API ASkillBase : public AActor
 {
@@ -15,7 +17,5 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-public:	
-	virtual void Tick(float DeltaTime) override;
-
+	void ReleaseBullet(const TSubclassOf<ABulletBase>& BulletType, int32 BulletCount, float SectorAngle);
 };

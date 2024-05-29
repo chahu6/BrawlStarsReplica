@@ -1,11 +1,11 @@
 #include "Controller/Login/LoginBase.h"
-#include "Hero/Colt/ColtHero.h"
+//#include "Hero/Colt/ColtHero.h"
 #include "Kismet/GameplayStatics.h"
 #include "SubSystem/GameStateSubsystem.h"
 
 ALoginBase::ALoginBase()
 {
-	DefaultHeroType = AColtHero::StaticClass();
+	//DefaultHeroType = AColtHero::StaticClass();
 
 	DefaultGameModeType = EGameLevelName::EGN_GemGrab;
 

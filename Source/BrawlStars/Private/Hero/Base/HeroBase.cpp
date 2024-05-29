@@ -17,7 +17,7 @@
 
 AHeroBase::AHeroBase()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	bUseControllerRotationYaw = false;
 
 	GetCapsuleComponent()->SetEnableGravity(false);
@@ -182,37 +182,31 @@ void AHeroBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 	DOREPLIFETIME(AHeroBase, bPlayerOwned);
 }
 
-void AHeroBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
 void AHeroBase::EquipFlatAimingManager()
 {
 	UWorld* World = GetWorld();
-	if (World && AimingFlatClass)
+	if (World)
 	{
 		FActorSpawnParameters SpawnParam;
 		SpawnParam.Owner = this;
-		AAimingFlat* FlatAiming = World->SpawnActor<AAimingFlat>(AimingFlatClass, GetActorLocation(), FRotator::ZeroRotator, SpawnParam);
+		AAimingFlat* FlatAiming = World->SpawnActor<AAimingFlat>(GetActorLocation(), FRotator::ZeroRotator, SpawnParam);
 		AimingManager.FlatAimingManager = FlatAiming;
-		AimingManager.FlatAimingManager->SetReplicates(true);
-		AimingManager.FlatAimingManager->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
+		//AimingManager.FlatAimingManager->SetReplicates(true);
+		AimingManager.FlatAimingManager->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
 	}
 }
 
 void AHeroBase::EquipLaunchAimingManager()
 {
 	UWorld* World = GetWorld();
-	if (World && AimingLaunchClass)
+	if (World)
 	{
 		FActorSpawnParameters SpawnParam;
 		SpawnParam.Owner = this;
-		AAimingLaunch* LaunchAiming = World->SpawnActor<AAimingLaunch>(AimingLaunchClass, GetActorLocation(), FRotator::ZeroRotator, SpawnParam);
+		AAimingLaunch* LaunchAiming = World->SpawnActor<AAimingLaunch>(GetActorLocation(), FRotator::ZeroRotator, SpawnParam);
 		AimingManager.LaunchAimingManager = LaunchAiming;
-		AimingManager.LaunchAimingManager->SetReplicates(true);
-		AimingManager.LaunchAimingManager->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
+		//AimingManager.LaunchAimingManager->SetReplicates(true);
+		AimingManager.LaunchAimingManager->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
 	}
 }
 

@@ -53,6 +53,10 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	FOnUltimateRechage UltimateRechage;
+	FOnNormalSkillFinished NormalSkillFinished;
+	FOnUltimateSkillFinished UltimateSkillFinished;
+
 private:
 	bool CheckPhysicsBottonNormal(bool bPress);
 	bool CheckActivatableNormal();
@@ -91,8 +95,4 @@ private:
 
 	bool bUltimateButtonPressed;
 	bool bUltimateButtonReleased = true;
-
-	FOnNormalSkillFinished NormalSkillFinished;
-	FOnUltimateRechage UltimateRechage;
-	FOnUltimateSkillFinished UltimateSkillFinished;
 };

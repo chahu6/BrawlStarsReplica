@@ -4,6 +4,8 @@
 #include "GameFramework/Actor.h"
 #include "BulletBase.generated.h"
 
+class AHeroBase;
+
 UCLASS()
 class BRAWLSTARS_API ABulletBase : public AActor
 {
@@ -25,6 +27,14 @@ private:
 
 	UFUNCTION()
 	void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	bool CheckTeamate(AActor* OtherActor);
+
+	void HitEnemy();
+
+	void RechageUltimate();
+
+	void ApplyDamageAndDestroy();
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess ="true"))
@@ -57,4 +67,7 @@ private:
 
 	UPROPERTY()
 	float BulletSoundVolume;
+
+	UPROPERTY()
+	AHeroBase* Enemy;
 };

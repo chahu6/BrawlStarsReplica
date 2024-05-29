@@ -36,7 +36,6 @@ protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:	
-	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
@@ -113,12 +112,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Properties")
 	TSubclassOf<AWeaponBase> WeaponClass;
 
-	UPROPERTY(EditAnywhere, Category = "Properties")
-	TSubclassOf<AAimingFlat> AimingFlatClass;
-
-	UPROPERTY(EditAnywhere, Category = "Properties")
-	TSubclassOf<AAimingLaunch> AimingLaunchClass;
-
 	UPROPERTY()
 	AWeaponBase* Weapon;
 
@@ -141,4 +134,5 @@ public:
 	FORCEINLINE bool RandomOdds(float Odds) const { return FMath::TruncToFloat(Odds * 100) > FMath::RandRange(0, 100); }
 	FORCEINLINE USoundBase* RandomSound(const TArray<USoundBase*>& Sounds) const { return Sounds[FMath::RandHelper(Sounds.Num())]; }
 	FORCEINLINE AWeaponBase* GetWeapon() { return Weapon; }
+	FORCEINLINE USkillLockComponent* GetSkillLockComponent() const { return SkillLockComponent; }
 };

@@ -15,6 +15,7 @@ ASkillBase::ASkillBase()
 void ASkillBase::BeginPlay()
 {
 	Super::BeginPlay();
+
 	TArray<FName> RowNames;
 	
 	// 第一个参数一般传入nullptr或GetTransientPackage()
@@ -44,6 +45,7 @@ void ASkillBase::ReleaseBullet(const TSubclassOf<ABulletBase>& BulletType, int32
 		FActorSpawnParameters SpawnParameters;
 		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		SpawnParameters.Instigator = GetInstigator();
+		SpawnParameters.Owner = GetOwner();
 		GetWorld()->SpawnActor<ABulletBase>(BulletType, Location, Rotation, SpawnParameters);
 		Rotation.Yaw += SectorAngleSplit;
 	}

@@ -6,10 +6,13 @@
 #include "Kismet/DataTableFunctionLibrary.h"
 #include "Hero/Base/DataInfo/DataInfo.h"
 #include "Kismet/GameplayStatics.h"
+#include "BrawlStars/BrawlStars.h"
+#include "Hero/Base/HeroBase.h"
+#include "Components/SkillLockComponent.h"
 
 ABulletBase::ABulletBase()
 {
- 	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
 
 	Cube = CreateDefaultSubobject<UBoxComponent>(TEXT("Cube"));
@@ -19,7 +22,8 @@ ABulletBase::ABulletBase()
 
 	Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
 	Sphere->SetupAttachment(RootComponent);
-	Sphere->SetCollisionProfileName("BulletOverlap");
+	Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	//Sphere->SetCollisionProfileName("BulletOverlap");
 	Sphere->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
 
 	BulletHead = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletHead"));
@@ -35,8 +39,7 @@ void ABulletBase::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
 
-	Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	UDataTable* DataTable = LoadObject<UDataTable>(nullptr, TEXT("/Script/Engine.DataTable'/Game/Hero/Base/Data/DT_Skill.DT_Skill'"));
+	UDataTable* DataTable = LoadObject<UDataTable>(nullptr, DT_Skill);
 	TArray<FName> RowNames;
 	if (DataTable)
 	{
@@ -58,7 +61,7 @@ void ABulletBase::OnConstruction(const FTransform& Transform)
 		}
 	}
 
-	DataTable = LoadObject<UDataTable>(nullptr, TEXT("/Script/Engine.DataTable'/Game/Hero/Base/Data/BP_BulletSoundEffect.BP_BulletSoundEffect'"));
+	DataTable = LoadObject<UDataTable>(nullptr, DT_BulletSoundEffect);
 	if (DataTable)
 	{
 		RowNames.Empty();
@@ -93,12 +96,46 @@ void ABulletBase::PostInitializeComponents()
 
 void ABulletBase::OnCubeBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (OtherActor == GetOwner()) return;
 	UE_LOG(LogTemp, Warning, TEXT("OnCubeBeginOverlap"));
+
+	if(CheckTeamate(OtherActor))
+	{
+		RechageUltimate();
+	}
 }
 
 void ABulletBase::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (OtherActor == GetOwner()) return;
 	UE_LOG(LogTemp, Warning, TEXT("OnSphereBeginOverlap"));
+}
+
+bool ABulletBase::CheckTeamate(AActor* OtherActor)
+{
+	Enemy = Cast<AHeroBase>(OtherActor);
+	return Enemy != nullptr;
+}
+
+void ABulletBase::HitEnemy()
+{
+	RechageUltimate();
+	ApplyDamageAndDestroy();
+}
+
+void ABulletBase::RechageUltimate()
+{
+	AHeroBase* Attacker = Cast<AHeroBase>(GetInstigator());
+	if (IsValid(Attacker) && Attacker->GetSkillLockComponent())
+	{
+		Attacker->GetSkillLockComponent()->UltimateRechage.Broadcast();
+	}
+}
+
+void ABulletBase::ApplyDamageAndDestroy()
+{
+	UGameplayStatics::ApplyDamage(Enemy, Damage, nullptr, this, UDamageType::StaticClass());
+	Destroy();
 }
 
 void ABulletBase::BeginPlay()

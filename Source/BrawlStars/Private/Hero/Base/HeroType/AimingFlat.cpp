@@ -21,6 +21,7 @@
 AAimingFlat::AAimingFlat()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
 	AimingDecal = CreateDefaultSubobject<UDecalComponent>(TEXT("AimingDecal"));
@@ -59,11 +60,11 @@ void AAimingFlat::OnConstruction(const FTransform& Transform)
 	}
 
 	// ²ÄÖÊ
-	//UMaterialInterface* DecalMaterial = LoadObject<UMaterialInterface>(this, TEXT("/Script/Engine.Material'/Game/Hero/Base/Asset/M_Decal_FlatAim_Rectangle.M_Decal_FlatAim_Rectangle'"));
-	//if (DecalMaterial)
-	//{
-	//	AimingDecal->SetDecalMaterial(DecalMaterial);	
-	//}
+	UMaterialInterface* DecalMaterial = LoadObject<UMaterialInterface>(this, TEXT("/Script/Engine.Material'/Game/Assets/Hero/Base/M_Decal_FlatAim_Rectangle.M_Decal_FlatAim_Rectangle'"));
+	if (DecalMaterial)
+	{
+		AimingDecal->SetDecalMaterial(DecalMaterial);	
+	}
 	AimingDecal->SetRelativeRotation(FRotator(90.0, 0.0, 0.0));
 	AimingDecal->SetRelativeScale3D(FVector(1.0, 4.0, 4.0));
 	AimingDecal->SetVisibility(false);
@@ -89,10 +90,9 @@ void AAimingFlat::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (IsValid(Hero))
-	{
-		FlatAimingManager();
-	}
+	if (!IsValid(Hero)) return;
+	
+	FlatAimingManager();
 }
 
 void AAimingFlat::CenterMousePosition()
@@ -109,7 +109,8 @@ void AAimingFlat::SkillMontageStop()
 {
 	if (IsValid(Hero))
 	{
-		Hero->GetMesh()->GetAnimInstance()->Montage_Stop(0.0f);
+		//Hero->GetMesh()->GetAnimInstance()->Montage_Stop(0.0f);
+		Hero->StopAnimMontage();
 	}
 }
 
@@ -150,6 +151,7 @@ void AAimingFlat::ReleaseFlatSkill(const TSubclassOf<ASkillBase>& SkillType)
 			FActorSpawnParameters SpawnParameters;
 			SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 			SpawnParameters.Instigator = Hero;
+			SpawnParameters.Owner = GetOwner();
 			GetWorld()->SpawnActor<ASkillBase>(SkillType, SocketLocation, Hero->GetCapsuleComponent()->GetForwardVector().ToOrientationRotator(), SpawnParameters);
 		}
 	}
@@ -182,34 +184,33 @@ bool AAimingFlat::NotAIControlled()
 
 void AAimingFlat::FlatAimingManager()
 {
-	if (Hero->IsLocallyControlled())
-	{
-		if (AimingInfo.bIsFlatAiming)
-		{
-			UpdateDecalShap();
-			UpdateAimDistanceAndRotation();
-			if (NotAIControlled() && FMath::Abs(AimingInfo.AimDistance) > 1.0f)
-			{
-				AimingDecal->SetVisibility(true);
-				AimingDecal->SetWorldRotation(FRotator(90.0, AimingInfo.AimRotationYaw, 180.0));
+	if (!Hero->IsLocallyControlled()) return;
 
-				DoOnce.Reset();
-			}
-		}
-		else
+	if (AimingInfo.bIsFlatAiming)
+	{
+		UpdateDecalShap();
+		UpdateAimDistanceAndRotation();
+		if (NotAIControlled() && FMath::Abs(AimingInfo.AimDistance) > 1.0f)
 		{
-			DoOnce.Execute([this]()
-			{
-				AimingInfo.AimDistance = 0.0f;
-				AimingDecal->SetVisibility(false);
-			});
+			AimingDecal->SetVisibility(true);
+			AimingDecal->SetWorldRotation(FRotator(90.0, AimingInfo.AimRotationYaw, 180.0));
+
+			DoOnce.Reset();
 		}
+	}
+	else
+	{
+		DoOnce.Execute([this]()
+		{
+			AimingInfo.AimDistance = 0.0f;
+			AimingDecal->SetVisibility(false);
+		});
 	}
 }
 
 void AAimingFlat::UpdateDecalShap()
 {
-	USkillLockComponent* SkillLockComponent = Hero->GetComponentByClass<USkillLockComponent>();
+	USkillLockComponent* SkillLockComponent = Hero->GetSkillLockComponent();
 	if (SkillLockComponent)
 	{
 		float Angle;
@@ -228,11 +229,11 @@ void AAimingFlat::UpdateDecalShap()
 
 		if (DecalAngleNormal == 0.0f)
 		{
-			UMaterialInterface* Decal_Rectangle = LoadObject<UMaterialInterface>(this, TEXT("/Script/Engine.Material'/Game/Hero/Base/Asset/M_Decal_FlatAim_Rectangle.M_Decal_FlatAim_Rectangle'"));
+			UMaterialInterface* Decal_Rectangle = LoadObject<UMaterialInterface>(this, TEXT("/Script/Engine.Material'/Game/Assets/Hero/Base/M_Decal_FlatAim_Rectangle.M_Decal_FlatAim_Rectangle'"));
 			if (Decal_Rectangle)
 			{
 				AimingDecal->SetDecalMaterial(Decal_Rectangle);
-				UMaterialParameterCollection* Aim_Decal = LoadObject<UMaterialParameterCollection>(this, TEXT("/Script/Engine.MaterialParameterCollection'/Game/Hero/Base/Asset/MPC_Aim_Decal.MPC_Aim_Decal'"));
+				UMaterialParameterCollection* Aim_Decal = LoadObject<UMaterialParameterCollection>(this, TEXT("/Script/Engine.MaterialParameterCollection'/Game/Assets/Hero/Base/MPC_Aim_Decal.MPC_Aim_Decal'"));
 				if (Aim_Decal)
 				{
 					UKismetMaterialLibrary::SetScalarParameterValue(this, Aim_Decal, TEXT("Angle"), 0.0f);
@@ -242,11 +243,11 @@ void AAimingFlat::UpdateDecalShap()
 		}
 		else
 		{
-			UMaterialInterface* Decal_Sector = LoadObject<UMaterialInterface>(this, TEXT("/Script/Engine.Material'/Game/Hero/Base/Asset/M_Decal_FlatAim_Sector.M_Decal_FlatAim_Sector'"));
+			UMaterialInterface* Decal_Sector = LoadObject<UMaterialInterface>(this, TEXT("/Script/Engine.Material'/Game/Assets/Hero/Base/M_Decal_FlatAim_Sector.M_Decal_FlatAim_Sector'"));
 			if (Decal_Sector)
 			{
 				AimingDecal->SetDecalMaterial(Decal_Sector);
-				UMaterialParameterCollection* Aim_Decal = LoadObject<UMaterialParameterCollection>(this, TEXT("/Script/Engine.MaterialParameterCollection'/Game/Hero/Base/Asset/MPC_Aim_Decal.MPC_Aim_Decal'"));
+				UMaterialParameterCollection* Aim_Decal = LoadObject<UMaterialParameterCollection>(this, TEXT("/Script/Engine.MaterialParameterCollection'/Game/Assets/Hero/Base/MPC_Aim_Decal.MPC_Aim_Decal'"));
 				if (Aim_Decal)
 				{
 					UKismetMaterialLibrary::SetScalarParameterValue(this, Aim_Decal, TEXT("Angle"), Angle);

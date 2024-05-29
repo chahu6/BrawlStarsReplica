@@ -14,6 +14,4 @@ class BRAWLSTARS_API ALoginGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 	
-public:
-	ALoginGameMode();
 };

@@ -3,7 +3,7 @@
 
 AWeaponBase::AWeaponBase()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
 	RootComponent = Weapon;

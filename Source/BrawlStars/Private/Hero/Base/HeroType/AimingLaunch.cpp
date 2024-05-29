@@ -3,6 +3,7 @@
 AAimingLaunch::AAimingLaunch()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
 
 }
 

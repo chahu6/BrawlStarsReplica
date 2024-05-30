@@ -4,6 +4,8 @@
 #include "Components/ActorComponent.h"
 #include "HealthComponent.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, float);
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BRAWLSTARS_API UHealthComponent : public UActorComponent
@@ -13,6 +15,8 @@ class BRAWLSTARS_API UHealthComponent : public UActorComponent
 	friend class AHeroBase;
 public:	
 	UHealthComponent();
+
+	FOnHealthChanged OnHealthChanged;
 
 protected:
 	virtual void BeginPlay() override;
@@ -36,4 +40,7 @@ private:
 
 	UPROPERTY()
 	float RestedTime;
+
+public:
+	FORCEINLINE float GetCurrentHealth() const { return CurrentHealth; }
 };

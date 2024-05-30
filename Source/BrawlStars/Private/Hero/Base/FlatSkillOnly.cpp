@@ -1,5 +1,4 @@
 #include "Hero/Base/FlatSkillOnly.h"
-
 #include "Hero/Base/HeroType/AimingFlat.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -44,7 +43,7 @@ void AFlatSkillOnly::ReleaseSkill(float ReleaseRotationOffset, bool bNormalSkill
 	AimingManager.FlatAimingManager->SetHeroSkillReleaseRotation(ReleaseRotationOffset);
 	AimingManager.FlatAimingManager->LockMovementOrientRotation();
 	AimingManager.FlatAimingManager->ClientPlayMontage(Montage, 1.0f, MontageSection);
-	//GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &AFlatSkillOnly::ReleaseFlatSkill);
+	//GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, )
 
 	AimingManager.FlatAimingManager->ReleaseFlatSkill(SkillType);
 }

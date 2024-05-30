@@ -10,7 +10,6 @@ void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
 }
 
 void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

@@ -15,8 +15,8 @@ public:
 	virtual void OnConstruction(const FTransform& Transform) override;
 
 	virtual void BeginPlay() override;
-protected:
 
+protected:
 	// 技能相关
 	virtual void ActiveNormalSkill() override;
 	virtual void ReleaseNormalSkill() override;
@@ -26,4 +26,6 @@ protected:
 
 private:
 	void ReleaseSkill(float ReleaseRotationOffset, bool bNormalSkill, UAnimMontage* Montage, FName MontageSection, const TSubclassOf<ASkillBase>& SkillType);
+
+private:
 };

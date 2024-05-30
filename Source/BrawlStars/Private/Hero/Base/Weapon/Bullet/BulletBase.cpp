@@ -101,7 +101,7 @@ void ABulletBase::OnCubeBeginOverlap(UPrimitiveComponent* OverlappedComponent, A
 
 	if(CheckTeamate(OtherActor))
 	{
-		RechageUltimate();
+		HitEnemy();
 	}
 }
 

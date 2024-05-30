@@ -27,6 +27,7 @@ class BRAWLSTARS_API AHeroBase : public ACharacter
 
 public:
 	AHeroBase();
+	virtual void PossessedBy(AController* NewController) override;
 
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
@@ -60,6 +61,8 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void ServerInitTeamType();
 
+	void InitializeActorInfo();
+
 protected:	
 	// 按键相关函数
 	void NormalSkillButtonOnPressed();
@@ -75,6 +78,7 @@ private:
 	void InitHealthWidget();
 
 	// 显示伤害数字
+	UFUNCTION()
 	void ShowDamageNum(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
 	// 播放英雄台词
@@ -132,7 +136,8 @@ protected:
 
 public:
 	FORCEINLINE bool RandomOdds(float Odds) const { return FMath::TruncToFloat(Odds * 100) > FMath::RandRange(0, 100); }
-	FORCEINLINE USoundBase* RandomSound(const TArray<USoundBase*>& Sounds) const { return Sounds[FMath::RandHelper(Sounds.Num())]; }
+	FORCEINLINE USoundBase* RandomSound(const TArray<USoundBase*>& Sounds) const { return Sounds[FMath::RandHelper(Sounds.Num()-1)]; }
 	FORCEINLINE AWeaponBase* GetWeapon() { return Weapon; }
 	FORCEINLINE USkillLockComponent* GetSkillLockComponent() const { return SkillLockComponent; }
+	FORCEINLINE UHealthComponent* GetHealthComponent() const { return HealthComponent; }
 };

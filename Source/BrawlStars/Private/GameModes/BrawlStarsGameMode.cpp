@@ -1,14 +1,14 @@
-#include "GameModes/Game/GM_GameBase.h"
+#include "GameModes/BrawlStarsGameMode.h"
 #include "Controller/Game/GameBaseController.h"
 #include "Kismet/GameplayStatics.h"
 
-void AGM_GameBase::OnPostLogin(AController* NewPlayer)
+void ABrawlStarsGameMode::OnPostLogin(AController* NewPlayer)
 {
 	//Cast<AGameBaseController>(NewPlayer);
 	//PlayerInputDisable();
 }
 
-void AGM_GameBase::PlayerInputDisable()
+void ABrawlStarsGameMode::PlayerInputDisable()
 {
 	int32 PlayerNumber = GetNumPlayers();
 	for (int i = 0; i < PlayerNumber; ++i)

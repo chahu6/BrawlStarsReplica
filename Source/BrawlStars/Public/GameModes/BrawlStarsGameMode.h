@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "GM_GameBase.generated.h"
+#include "BrawlStarsGameMode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BRAWLSTARS_API AGM_GameBase : public AGameModeBase
+class BRAWLSTARS_API ABrawlStarsGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 	

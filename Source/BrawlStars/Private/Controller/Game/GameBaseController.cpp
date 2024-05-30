@@ -1,5 +1,12 @@
 #include "Controller/Game/GameBaseController.h"
 
+void AGameBaseController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	//PlayerControllerInputDisable();
+}
+
 void AGameBaseController::PlayerControllerInputDisable()
 {
 	APawn* ControlledPawn = GetPawn();

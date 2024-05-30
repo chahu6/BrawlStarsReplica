@@ -14,6 +14,7 @@
 #include "PlayerState/GameBase.h"
 #include "Net/UnrealNetwork.h"
 #include "BrawlStars/BrawlStars.h"
+#include "UI/HUD/BrawlStarsHUD.h"
 
 AHeroBase::AHeroBase()
 {
@@ -60,6 +61,27 @@ AHeroBase::AHeroBase()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 	GetCharacterMovement()->RotationRate = FRotator(0.0, 720.0, 0.0);
+}
+
+void AHeroBase::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	InitializeActorInfo();
+}
+
+void AHeroBase::InitializeActorInfo()
+{
+	if (APlayerController* PC = GetController<APlayerController>())
+	{
+		if (ABrawlStarsHUD* BrawlStarsHUD = PC->GetHUD<ABrawlStarsHUD>())
+		{
+			if (APlayerState* PS = GetPlayerState())
+			{
+				BrawlStarsHUD->InitOverlay(PC, PS);
+			}
+		}
+	}
 }
 
 void AHeroBase::OnConstruction(const FTransform& Transform)
@@ -154,7 +176,7 @@ void AHeroBase::BeginPlay()
 
 	InitHealthWidget();
 
-	//OnTakeAnyDamage.AddDynamic(this, &AHeroBase::ShowDamageNum);
+	OnTakeAnyDamage.AddDynamic(this, &AHeroBase::ShowDamageNum);
 
 	ServerInitTeamType();
 
@@ -375,15 +397,17 @@ void AHeroBase::PlayHeroSpeakLine(EHeroSpeakLineType SpeakLineType)
 
 void AHeroBase::PlayFSoundsWithOdds(float Odds, const TMap<EHeroSpeakLineType, FSounds>& FSounds)
 {
+	if (FSounds.IsEmpty()) return;
+
 	if (RandomOdds(Odds))
 	{
 		const auto Itr = FSounds.CreateConstIterator();
-
-		/*USoundBase* Sound = RandomSound(Itr.Value().Sounds);
+		if (Itr.Value().Sounds.IsEmpty()) return;
+		USoundBase* Sound = RandomSound(Itr.Value().Sounds);
 		if (Sound)
 		{
 			UGameplayStatics::PlaySound2D(this, Sound, 0.3f);
-		}*/
+		}
 	}
 }
 
@@ -412,8 +436,8 @@ void AHeroBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ThisClass::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ThisClass::MoveRight);
-	PlayerInputComponent->BindAxis("TurnRight", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	//PlayerInputComponent->BindAxis("TurnRight", this, &APawn::AddControllerYawInput);
+	//PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
 	PlayerInputComponent->BindAction("NormalSkill", IE_Pressed, this, &ThisClass::NormalSkillButtonOnPressed);
 	PlayerInputComponent->BindAction("NormalSkill", IE_Released, this, &ThisClass::NormalSkillButtonOnReleased);

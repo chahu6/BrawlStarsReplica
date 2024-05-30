@@ -16,6 +16,8 @@ class BRAWLSTARS_API AGameBaseController : public APlayerController
 	GENERATED_BODY()
 	
 public:
+	virtual void BeginPlay() override;
+
 	void PlayerControllerInputDisable();
 	void PlayerControllerInputEnable();
 

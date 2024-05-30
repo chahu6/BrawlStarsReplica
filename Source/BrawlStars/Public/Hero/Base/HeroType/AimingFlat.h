@@ -35,6 +35,8 @@ public:
 
 	void LockMovementOrientRotation();
 
+	void UnlockMovementOrientRotation();
+
 	void ClientPlayMontage(UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName);
 
 	void ReleaseFlatSkill(const TSubclassOf<ASkillBase>& SkillType);
@@ -67,7 +69,7 @@ private:
 	UPROPERTY()
 	AHeroBase* Hero;
 
-	UPROPERTY(Replicated)
+	UPROPERTY()
 	FAimInfo AimingInfo;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Properties")

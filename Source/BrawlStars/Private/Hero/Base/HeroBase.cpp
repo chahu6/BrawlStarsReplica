@@ -39,15 +39,6 @@ AHeroBase::AHeroBase()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
-	HealthWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthWidget"));
-	HealthWidget->SetupAttachment(RootComponent);
-	HealthWidget->SetWidgetSpace(EWidgetSpace::Screen);
-	//static ConstructorHelpers::FClassFinder<UUserWidget> WidgetClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/UMG/Game/Base/WBP_GameBase_Player.WBP_GameBase_Player_C'"));
-	//if (WidgetClass.Class != nullptr)
-	//{
-	//	HealthWidget->SetWidgetClass(WidgetClass.Class);
-	//}
-
 	GetMesh()->SetRelativeRotation(FRotator(0.0, -90.0, 0.0));
 	GetMesh()->SetRelativeLocation(FVector(0.0, 0.0, -90.0));
 	GetMesh()->SetRelativeScale3D(FVector(0.14));
@@ -66,6 +57,23 @@ AHeroBase::AHeroBase()
 void AHeroBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+
+	if (APlayerController* PC = Cast<APlayerController>(Controller))
+	{
+		PC->SetShowMouseCursor(true);
+	}
+
+	InitializeActorInfo();
+}
+
+void AHeroBase::OnRep_Controller()
+{
+	Super::OnRep_Controller();
+
+	if (APlayerController* PC = Cast<APlayerController>(Controller))
+	{
+		PC->SetShowMouseCursor(true);
+	}
 
 	InitializeActorInfo();
 }
@@ -178,9 +186,7 @@ void AHeroBase::BeginPlay()
 
 	OnTakeAnyDamage.AddDynamic(this, &AHeroBase::ShowDamageNum);
 
-	ServerInitTeamType();
-
-	UGameplayStatics::GetPlayerController(this, 0)->SetShowMouseCursor(true);
+	//ServerInitTeamType();
 
 	PlayHeroSpeakLine(EHeroSpeakLineType::ET_Spawn);
 }
@@ -200,7 +206,6 @@ void AHeroBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AHeroBase, TeamType);
-	DOREPLIFETIME(AHeroBase, AimingManager);
 	DOREPLIFETIME(AHeroBase, bPlayerOwned);
 }
 
@@ -213,7 +218,6 @@ void AHeroBase::EquipFlatAimingManager()
 		SpawnParam.Owner = this;
 		AAimingFlat* FlatAiming = World->SpawnActor<AAimingFlat>(GetActorLocation(), FRotator::ZeroRotator, SpawnParam);
 		AimingManager.FlatAimingManager = FlatAiming;
-		//AimingManager.FlatAimingManager->SetReplicates(true);
 		AimingManager.FlatAimingManager->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
 	}
 }
@@ -227,7 +231,6 @@ void AHeroBase::EquipLaunchAimingManager()
 		SpawnParam.Owner = this;
 		AAimingLaunch* LaunchAiming = World->SpawnActor<AAimingLaunch>(GetActorLocation(), FRotator::ZeroRotator, SpawnParam);
 		AimingManager.LaunchAimingManager = LaunchAiming;
-		//AimingManager.LaunchAimingManager->SetReplicates(true);
 		AimingManager.LaunchAimingManager->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
 	}
 }
@@ -293,7 +296,7 @@ void AHeroBase::NormalSkillButtonOnReleased()
 			// 释放技能
 			ReleaseNormalSkill();
 			// 释放技能打断回血
-			HealthComponent->MultiResetRestedTime();
+			//HealthComponent->MultiResetRestedTime();
 			// 释放技能时的台词
 			PlayHeroSpeakLine(EHeroSpeakLineType::ET_NormalSkill);
 		}
@@ -343,7 +346,7 @@ void AHeroBase::InitHealthWidget()
 	}
 	else
 	{
-		HealthWidget->SetVisibility(false);
+		//HealthWidget->SetVisibility(false);
 	}
 }
 

@@ -21,4 +21,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "WidgetController|Attributes")
 	FOnAttributeChangedSignature OnHealthChanged;
+
+	UPROPERTY(BlueprintAssignable, Category = "WidgetController|Attributes")
+	FOnAttributeChangedSignature OnMaxHealthChanged;
 };

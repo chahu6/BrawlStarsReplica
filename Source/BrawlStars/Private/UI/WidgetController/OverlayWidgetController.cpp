@@ -10,6 +10,7 @@ void UOverlayWidgetController::BroadcastInitialValue()
 	if (AHeroBase* Hero = PlayerController->GetPawn<AHeroBase>())
 	{
 		OnHealthChanged.Broadcast(Hero->GetHealthComponent()->GetCurrentHealth());
+		OnMaxHealthChanged.Broadcast(Hero->GetHealthComponent()->GetMaxHealth());
 	}
 }
 
@@ -21,6 +22,13 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 			[this](float NewValue)
 			{
 				OnHealthChanged.Broadcast(NewValue);
+			}
+		);
+
+		Hero->GetHealthComponent()->OnMaxHealthChanged.AddLambda(
+			[this](float NewValue)
+			{
+				OnMaxHealthChanged.Broadcast(NewValue);
 			}
 		);
 	}

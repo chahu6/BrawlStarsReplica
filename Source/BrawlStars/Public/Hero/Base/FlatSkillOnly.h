@@ -4,6 +4,7 @@
 #include "HeroBase.h"
 #include "FlatSkillOnly.generated.h"
 
+class ASkillBase;
 /**
  * 
  */
@@ -24,8 +25,29 @@ protected:
 	virtual void ActiveUltimateSkill() override;
 	virtual void ReleaseUltimateSkill() override;
 
-private:
-	void ReleaseSkill(float ReleaseRotationOffset, bool bNormalSkill, UAnimMontage* Montage, FName MontageSection, const TSubclassOf<ASkillBase>& SkillType);
+	UFUNCTION()
+	void OnNotifyBeginReceived(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
+
+	UFUNCTION()
+	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
+	void ReleaseSkill(float ReleaseRotationOffset, bool bNormalSkill, UAnimMontage* Montage, FName MontageSection, TSubclassOf<ASkillBase> SkillType);
 
 private:
+	UFUNCTION(Server, Reliable)
+	void ServerReleaseSkill(float ReleaseRotationOffset, bool bNormalSkill, UAnimMontage* Montage, FName MontageSection, TSubclassOf<ASkillBase> SkillType);
+	void ServerReleaseSkill_Implementation(float ReleaseRotationOffset, bool bNormalSkill, UAnimMontage* Montage, FName MontageSection, TSubclassOf<ASkillBase> SkillType);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastReleaseSkill(float ReleaseRotationOffset, bool bNormalSkill, UAnimMontage* Montage, FName MontageSection, TSubclassOf<ASkillBase> SkillType);
+	void MulticastReleaseSkill_Implementation(float ReleaseRotationOffset, bool bNormalSkill, UAnimMontage* Montage, FName MontageSection, TSubclassOf<ASkillBase> SkillType);
+
+	void UnbindDelegates();
+
+private:
+	FOnMontageEnded MontageEndedDelegate;
+
+	TSubclassOf<ASkillBase> SkillClass;
+
+	bool bIsNormalSkill = false;
 };

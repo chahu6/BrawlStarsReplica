@@ -27,7 +27,9 @@ class BRAWLSTARS_API AHeroBase : public ACharacter
 
 public:
 	AHeroBase();
+
 	virtual void PossessedBy(AController* NewController) override;
+	virtual void OnRep_Controller() override;
 
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
@@ -90,7 +92,7 @@ private:
 	UFUNCTION()
 	void DelayGetPlayerStateCallBack();
 
-private:
+protected:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* TeamDecal;
 
@@ -106,9 +108,6 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class USkillLockComponent* SkillLockComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	class UWidgetComponent* HealthWidget;
-
 protected:
 	UPROPERTY(EditAnywhere)
 	UParticleSystem* ElimEffect;
@@ -119,7 +118,7 @@ protected:
 	UPROPERTY()
 	AWeaponBase* Weapon;
 
-	UPROPERTY(Replicated)
+	UPROPERTY()
 	FAimingManager AimingManager;
 
 	UPROPERTY()

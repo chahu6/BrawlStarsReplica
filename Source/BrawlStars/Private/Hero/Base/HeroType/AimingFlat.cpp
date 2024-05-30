@@ -21,7 +21,6 @@
 AAimingFlat::AAimingFlat()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	bReplicates = true;
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
 	AimingDecal = CreateDefaultSubobject<UDecalComponent>(TEXT("AimingDecal"));
@@ -83,7 +82,7 @@ void AAimingFlat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AAimingFlat, AimingInfo);
+	//DOREPLIFETIME(AAimingFlat, AimingInfo);
 }
 
 void AAimingFlat::Tick(float DeltaTime)
@@ -97,11 +96,14 @@ void AAimingFlat::Tick(float DeltaTime)
 
 void AAimingFlat::CenterMousePosition()
 {
-	if (NotAIControlled())
+	int64 X = FMath::TruncToInt(AimingInfo.ViewportCentrePoint.X);
+	int64 Y = FMath::TruncToInt(AimingInfo.ViewportCentrePoint.Y);
+
+	APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
+	if (PC && PC->IsLocalController() && NotAIControlled())
 	{
-		int64 X = FMath::TruncToInt(AimingInfo.ViewportCentrePoint.X);
-		int64 Y = FMath::TruncToInt(AimingInfo.ViewportCentrePoint.Y);
-		UGameplayStatics::GetPlayerController(this, 0)->SetMouseLocation(X, Y);
+		
+		PC->SetMouseLocation(X, Y);
 	}
 }
 
@@ -128,6 +130,14 @@ void AAimingFlat::LockMovementOrientRotation()
 	if (IsValid(Hero))
 	{
 		Hero->GetCharacterMovement()->bOrientRotationToMovement = false;
+	}
+}
+
+void AAimingFlat::UnlockMovementOrientRotation()
+{
+	if (IsValid(Hero))
+	{
+		Hero->GetCharacterMovement()->bOrientRotationToMovement = true;
 	}
 }
 
@@ -169,14 +179,10 @@ void AAimingFlat::InitAimingScreenPoint()
 
 bool AAimingFlat::NotAIControlled()
 {
-	AActor* MyOwner = GetOwner();
-	if (IsValid(MyOwner))
+	Hero = Hero == nullptr ? Cast<AHeroBase>(GetOwner()) : Hero;
+	if (Hero)
 	{
-		APawn* Instig = MyOwner->GetInstigator();
-		if (Instig)
-		{
-			return !Instig->IsBotControlled();
-		}
+		return !Hero->IsBotControlled();
 	}
 
 	return false;
@@ -184,7 +190,7 @@ bool AAimingFlat::NotAIControlled()
 
 void AAimingFlat::FlatAimingManager()
 {
-	if (!Hero->IsLocallyControlled()) return;
+	if (Hero == nullptr || !Hero->IsLocallyControlled()) return;
 
 	if (AimingInfo.bIsFlatAiming)
 	{

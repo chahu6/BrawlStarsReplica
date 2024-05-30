@@ -17,6 +17,7 @@ public:
 	UHealthComponent();
 
 	FOnHealthChanged OnHealthChanged;
+	FOnHealthChanged OnMaxHealthChanged;
 
 protected:
 	virtual void BeginPlay() override;
@@ -43,4 +44,5 @@ private:
 
 public:
 	FORCEINLINE float GetCurrentHealth() const { return CurrentHealth; }
+	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
 };

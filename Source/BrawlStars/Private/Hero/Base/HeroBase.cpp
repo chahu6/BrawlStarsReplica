@@ -15,6 +15,7 @@
 #include "Net/UnrealNetwork.h"
 #include "BrawlStars/BrawlStars.h"
 #include "UI/HUD/BrawlStarsHUD.h"
+#include "Settings/BrawlStarsSettings.h"
 
 AHeroBase::AHeroBase()
 {
@@ -99,10 +100,12 @@ void AHeroBase::OnConstruction(const FTransform& Transform)
 	TeamDecal->SetHiddenInGame(true);
 	TArray<FName> RowNames;
 
+	const UBrawlStarsSettings* Setting = GetDefault<UBrawlStarsSettings>();
+
 	// 英雄初始化
 	{
 		// 第一个参数一般传入nullptr或GetTransientPackage()
-		UDataTable* DataTable = LoadObject<UDataTable>(nullptr, DT_Hero);
+		UDataTable* DataTable = Setting->HeroDataTable.LoadSynchronous();
 		RowNames.Empty();
 		UDataTableFunctionLibrary::GetDataTableRowNames(DataTable, RowNames);
 		for (auto& Elem : RowNames)
@@ -121,7 +124,7 @@ void AHeroBase::OnConstruction(const FTransform& Transform)
 
 	// 技能初始化
 	{
-		UDataTable* DataTable = LoadObject<UDataTable>(nullptr, DT_Skill);
+		UDataTable* DataTable = Setting->SkillDataTable.LoadSynchronous();
 		RowNames.Empty();
 		UDataTableFunctionLibrary::GetDataTableRowNames(DataTable, RowNames);
 		for (auto& Elem : RowNames)
@@ -145,7 +148,7 @@ void AHeroBase::OnConstruction(const FTransform& Transform)
 
 	// 技能蒙太奇
 	{
-		UDataTable* DataTable = LoadObject<UDataTable>(nullptr, DT_SkillMontage);
+		UDataTable* DataTable = Setting->SkillMontageDataTable.LoadSynchronous();
 		RowNames.Empty();
 		UDataTableFunctionLibrary::GetDataTableRowNames(DataTable, RowNames);
 		for (auto& Elem : RowNames)
@@ -161,7 +164,7 @@ void AHeroBase::OnConstruction(const FTransform& Transform)
 
 	// 英雄台词
 	{
-		UDataTable* DataTable = LoadObject<UDataTable>(nullptr, DT_HeroSpeakLine);
+		UDataTable* DataTable = Setting->HeroSpeakLineDataTable.LoadSynchronous();
 		RowNames.Empty();
 		UDataTableFunctionLibrary::GetDataTableRowNames(DataTable, RowNames);
 		for (auto& Elem : RowNames)
@@ -206,6 +209,7 @@ void AHeroBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AHeroBase, TeamType);
+	DOREPLIFETIME(AHeroBase, AimingManager);
 	DOREPLIFETIME(AHeroBase, bPlayerOwned);
 }
 

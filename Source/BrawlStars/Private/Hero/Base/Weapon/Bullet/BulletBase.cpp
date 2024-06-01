@@ -9,6 +9,7 @@
 #include "BrawlStars/BrawlStars.h"
 #include "Hero/Base/HeroBase.h"
 #include "Components/SkillLockComponent.h"
+#include "Settings/BrawlStarsSettings.h"
 
 ABulletBase::ABulletBase()
 {
@@ -39,7 +40,9 @@ void ABulletBase::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
 
-	UDataTable* DataTable = LoadObject<UDataTable>(nullptr, DT_Skill);
+	const UBrawlStarsSettings* Setting = GetDefault<UBrawlStarsSettings>();
+
+	UDataTable* DataTable = Setting->SkillDataTable.LoadSynchronous();
 	TArray<FName> RowNames;
 	if (DataTable)
 	{
@@ -61,7 +64,7 @@ void ABulletBase::OnConstruction(const FTransform& Transform)
 		}
 	}
 
-	DataTable = LoadObject<UDataTable>(nullptr, DT_BulletSoundEffect);
+	DataTable = Setting->BulletSoundEffectDataTable.LoadSynchronous();
 	if (DataTable)
 	{
 		RowNames.Empty();
@@ -83,12 +86,12 @@ void ABulletBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	if (IsValid(Cube))
+	if (IsValid(Cube) && HasAuthority())
 	{
 		Cube->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnCubeBeginOverlap);
 	}
 
-	if (IsValid(Sphere))
+	if (IsValid(Sphere) && HasAuthority())
 	{
 		Sphere->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnSphereBeginOverlap);
 	}

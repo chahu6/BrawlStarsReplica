@@ -118,7 +118,7 @@ protected:
 	UPROPERTY()
 	AWeaponBase* Weapon;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	FAimingManager AimingManager;
 
 	UPROPERTY()

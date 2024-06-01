@@ -4,6 +4,7 @@
 #include "Hero/Base/DataInfo/DataInfo.h"
 #include "Hero/Base/Weapon/Bullet/BulletBase.h"
 #include "BrawlStars/BrawlStars.h"
+#include "Settings/BrawlStarsSettings.h"
 
 ASkillBase::ASkillBase()
 {
@@ -17,9 +18,11 @@ void ASkillBase::BeginPlay()
 	Super::BeginPlay();
 
 	TArray<FName> RowNames;
+
+	const UBrawlStarsSettings* Setting = GetDefault<UBrawlStarsSettings>();
 	
 	// 第一个参数一般传入nullptr或GetTransientPackage()
-	UDataTable* DataTable = LoadObject<UDataTable>(nullptr, DT_Skill);
+	UDataTable* DataTable = Setting->SkillDataTable.LoadSynchronous();
 	RowNames.Empty();
 	UDataTableFunctionLibrary::GetDataTableRowNames(DataTable, RowNames);
 	for (auto& Elem : RowNames)

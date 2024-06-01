@@ -17,10 +17,12 @@
 #include "Components/CapsuleComponent.h"
 #include "Hero/Base/Skill/SkillBase.h"
 #include "BrawlStars/BrawlStars.h"
+#include "Settings/BrawlStarsSettings.h"
 
 AAimingFlat::AAimingFlat()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
 	AimingDecal = CreateDefaultSubobject<UDecalComponent>(TEXT("AimingDecal"));
@@ -33,7 +35,9 @@ void AAimingFlat::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
 
-	UDataTable* DataTable = LoadObject<UDataTable>(nullptr, DT_Skill);
+	const UBrawlStarsSettings* Setting = GetDefault<UBrawlStarsSettings>();
+
+	UDataTable* DataTable = Setting->SkillDataTable.LoadSynchronous();
 	TArray<FName> RowNames;
 	UDataTableFunctionLibrary::GetDataTableRowNames(DataTable, RowNames);
 	for (auto& Elem : RowNames)
@@ -81,8 +85,6 @@ void AAimingFlat::BeginPlay()
 void AAimingFlat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	//DOREPLIFETIME(AAimingFlat, AimingInfo);
 }
 
 void AAimingFlat::Tick(float DeltaTime)
@@ -141,7 +143,7 @@ void AAimingFlat::UnlockMovementOrientRotation()
 	}
 }
 
-void AAimingFlat::ClientPlayMontage(UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName)
+void AAimingFlat::PlayMontage(UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName)
 {
 	if (IsValid(Hero))
 	{

@@ -185,17 +185,24 @@ struct FAimInfo
 {
 	GENERATED_USTRUCT_BODY()
 
+	UPROPERTY()
 	bool bIsFlatAiming;
 
+	UPROPERTY()
 	bool bIsLaunchAming;
 
+	UPROPERTY()
 	bool bIsViewportCentrePointSet;
 
+	UPROPERTY()
 	FVector2D ViewportCentrePoint;
 
+	UPROPERTY()
 	FVector2D RealViewportCenterMousePoint;
 
+	UPROPERTY()
 	float AimDistance;
 
+	UPROPERTY()
 	float AimRotationYaw;
 };

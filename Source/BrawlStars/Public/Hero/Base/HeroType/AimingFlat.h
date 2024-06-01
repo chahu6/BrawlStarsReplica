@@ -37,7 +37,7 @@ public:
 
 	void UnlockMovementOrientRotation();
 
-	void ClientPlayMontage(UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName);
+	void PlayMontage(UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName);
 
 	void ReleaseFlatSkill(const TSubclassOf<ASkillBase>& SkillType);
 

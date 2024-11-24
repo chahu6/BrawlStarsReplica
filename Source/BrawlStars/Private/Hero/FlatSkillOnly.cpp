@@ -29,8 +29,8 @@ void AFlatSkillOnly::ReleaseNormalSkill()
 
 	AimingManager.FlatAimingManager->AimingInfo.bIsFlatAiming = false;
 
-	ReleaseSkill(HeroSkills.NormalReleaseOffset, true, HeroSkills.NormalMontage, HeroSkills.NormalMontageSection, HeroSkills.NormalSkillType);
-	ServerReleaseSkill(AimingManager.FlatAimingManager->AimingInfo, HeroSkills.NormalReleaseOffset, true, HeroSkills.NormalMontage, HeroSkills.NormalMontageSection, HeroSkills.NormalSkillType);
+	ReleaseSkill(HeroSkillMontage.NormalReleaseOffset, true, HeroSkillMontage.NormalMontage, HeroSkillMontage.NormalMontageSection, HeroSkillMontage.NormalSkillType);
+	ServerReleaseSkill(AimingManager.FlatAimingManager->AimingInfo, HeroSkillMontage.NormalReleaseOffset, true, HeroSkillMontage.NormalMontage, HeroSkillMontage.NormalMontageSection, HeroSkillMontage.NormalSkillType);
 }
 
 void AFlatSkillOnly::ActiveUltimateSkill()

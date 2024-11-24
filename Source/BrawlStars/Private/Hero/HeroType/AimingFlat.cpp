@@ -63,11 +63,6 @@ void AAimingFlat::OnConstruction(const FTransform& Transform)
 	}
 
 	// ²ÄÖÊ
-	UMaterialInterface* DecalMaterial = LoadObject<UMaterialInterface>(this, TEXT("/Script/Engine.Material'/Game/Assets/Hero/Base/M_Decal_FlatAim_Rectangle.M_Decal_FlatAim_Rectangle'"));
-	if (DecalMaterial)
-	{
-		AimingDecal->SetDecalMaterial(DecalMaterial);	
-	}
 	AimingDecal->SetRelativeRotation(FRotator(90.0, 0.0, 0.0));
 	AimingDecal->SetRelativeScale3D(FVector(1.0, 4.0, 4.0));
 	AimingDecal->SetVisibility(false);
@@ -94,6 +89,31 @@ void AAimingFlat::Tick(float DeltaTime)
 	if (!IsValid(Hero)) return;
 	
 	FlatAimingManager();
+}
+
+void AAimingFlat::FlatAimingManager()
+{
+	if (Hero == nullptr || !Hero->IsLocallyControlled()) return;
+
+	if (AimingInfo.bIsFlatAiming)
+	{
+		UpdateDecalShap();
+		UpdateAimDistanceAndRotation();
+		if (NotAIControlled() && FMath::Abs(AimingInfo.AimDistance) > 1.0f)
+		{
+			AimingDecal->SetVisibility(true);
+			AimingDecal->SetWorldRotation(FRotator(90.0, AimingInfo.AimRotationYaw, 180.0));
+
+			DoOnce.Reset();
+		}
+	}
+	else
+	{
+		DoOnce.Execute([this]() {
+			AimingInfo.AimDistance = 0.0f;
+			AimingDecal->SetVisibility(false);
+		});
+	}
 }
 
 void AAimingFlat::CenterMousePosition()
@@ -189,41 +209,15 @@ bool AAimingFlat::NotAIControlled()
 	return false;
 }
 
-void AAimingFlat::FlatAimingManager()
-{
-	if (Hero == nullptr || !Hero->IsLocallyControlled()) return;
-
-	if (AimingInfo.bIsFlatAiming)
-	{
-		UpdateDecalShap();
-		UpdateAimDistanceAndRotation();
-		if (NotAIControlled() && FMath::Abs(AimingInfo.AimDistance) > 1.0f)
-		{
-			AimingDecal->SetVisibility(true);
-			AimingDecal->SetWorldRotation(FRotator(90.0, AimingInfo.AimRotationYaw, 180.0));
-
-			DoOnce.Reset();
-		}
-	}
-	else
-	{
-		DoOnce.Execute([this]()
-		{
-			AimingInfo.AimDistance = 0.0f;
-			AimingDecal->SetVisibility(false);
-		});
-	}
-}
-
 void AAimingFlat::UpdateDecalShap()
 {
 	USkillLockComponent* SkillLockComponent = Hero->GetSkillLockComponent();
 	if (SkillLockComponent)
 	{
-		float Angle;
-		float Distance;
+		float Angle = 0.f;
+		float Distance = 0.f;
 
-		if (SkillLockComponent->SkillState.bIsNormalActivated)
+		if (/*SkillLockComponent->SkillState.bIsNormalActivated*/true)
 		{
 			Angle = DecalAngleNormal / 360.0f;
 			Distance = DecalDistanceNormal;
@@ -236,30 +230,24 @@ void AAimingFlat::UpdateDecalShap()
 
 		if (DecalAngleNormal == 0.0f)
 		{
-			UMaterialInterface* Decal_Rectangle = LoadObject<UMaterialInterface>(this, TEXT("/Script/Engine.Material'/Game/Assets/Hero/Base/M_Decal_FlatAim_Rectangle.M_Decal_FlatAim_Rectangle'"));
 			if (Decal_Rectangle)
 			{
 				AimingDecal->SetDecalMaterial(Decal_Rectangle);
-				UMaterialParameterCollection* Aim_Decal = LoadObject<UMaterialParameterCollection>(this, TEXT("/Script/Engine.MaterialParameterCollection'/Game/Assets/Hero/Base/MPC_Aim_Decal.MPC_Aim_Decal'"));
-				if (Aim_Decal)
-				{
-					UKismetMaterialLibrary::SetScalarParameterValue(this, Aim_Decal, TEXT("Angle"), 0.0f);
-					UKismetMaterialLibrary::SetScalarParameterValue(this, Aim_Decal, TEXT("Distance"), 1.0f - (Distance / 1400.0f) - 0.3f);
-				}
+
+				check(Aim_Decal);
+				UKismetMaterialLibrary::SetScalarParameterValue(this, Aim_Decal, TEXT("Angle"), 0.0f);
+				UKismetMaterialLibrary::SetScalarParameterValue(this, Aim_Decal, TEXT("Distance"), 1.0f - (Distance / 1400.0f) - 0.3f);
 			}
 		}
 		else
 		{
-			UMaterialInterface* Decal_Sector = LoadObject<UMaterialInterface>(this, TEXT("/Script/Engine.Material'/Game/Assets/Hero/Base/M_Decal_FlatAim_Sector.M_Decal_FlatAim_Sector'"));
 			if (Decal_Sector)
 			{
 				AimingDecal->SetDecalMaterial(Decal_Sector);
-				UMaterialParameterCollection* Aim_Decal = LoadObject<UMaterialParameterCollection>(this, TEXT("/Script/Engine.MaterialParameterCollection'/Game/Assets/Hero/Base/MPC_Aim_Decal.MPC_Aim_Decal'"));
-				if (Aim_Decal)
-				{
-					UKismetMaterialLibrary::SetScalarParameterValue(this, Aim_Decal, TEXT("Angle"), Angle);
-					UKismetMaterialLibrary::SetScalarParameterValue(this, Aim_Decal, TEXT("Distance"), Distance / 1500.0f + 0.3f);
-				}
+
+				check(Aim_Decal);
+				UKismetMaterialLibrary::SetScalarParameterValue(this, Aim_Decal, TEXT("Angle"), Angle);
+				UKismetMaterialLibrary::SetScalarParameterValue(this, Aim_Decal, TEXT("Distance"), (Distance / 1500.0f) + 0.3f);
 			}
 		}
 	}

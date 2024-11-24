@@ -4,10 +4,17 @@
 #include "GameFramework/Character.h"
 #include "DataInfo/DataInfo.h"
 #include "Data/DataType.h"
+#include "UI/WidgetController/OverlayWidgetController.h"
 #include "HeroBase.generated.h"
 
 class AAimingFlat;
 class AAimingLaunch;
+class AWeaponBase;
+class UHealthComponent;
+class USkillLockComponent;
+class USpringArmComponent;
+class UCameraComponent;
+class UWidgetComponent;
 
 USTRUCT(BlueprintType)
 struct FAimingManager
@@ -21,8 +28,6 @@ struct FAimingManager
 	TObjectPtr<AAimingLaunch> LaunchAimingManager;
 };
 
-class AWeaponBase;
-
 UCLASS()
 class BRAWLSTARS_API AHeroBase : public ACharacter
 {
@@ -33,6 +38,17 @@ public:
 
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_Controller() override;
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnHealthChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnMaxHealthChanged;
+
+	// 死亡
+	void HeroDie();
+	void SaveUltimateCurrent();
 
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
@@ -41,10 +57,6 @@ protected:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-public:	
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-protected:
 	void EquipFlatAimingManager();
 	void EquipLaunchAimingManager();
 
@@ -57,10 +69,6 @@ protected:
 
 	virtual void ActiveUltimateSkill() {};
 	virtual void ReleaseUltimateSkill() {};
-
-	// 死亡
-	void HeroDie();
-	void SaveUltimateCurrent();
 
 	// 初始化团队类型
 	UFUNCTION(Server, Reliable)
@@ -79,6 +87,8 @@ protected:
 	void MoveRight(float Value);
 
 private:
+	void BindCallbacksToDependencies();
+
 	// 初始化Widget
 	void InitHealthWidget();
 
@@ -97,26 +107,35 @@ private:
 
 protected:
 	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* TeamDecal;
+	TObjectPtr<UStaticMeshComponent> TeamDecal;
 
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
-	class USpringArmComponent* CameraBoom;
+	TObjectPtr<USpringArmComponent> CameraBoom;
 
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
-	class UCameraComponent* FollowCamera;
+	TObjectPtr<UCameraComponent> FollowCamera;
 
 	UPROPERTY(VisibleAnywhere)
-	class UHealthComponent* HealthComponent;
+	TObjectPtr<UHealthComponent> HealthComponent;
 	
 	UPROPERTY(VisibleAnywhere)
-	class USkillLockComponent* SkillLockComponent;
+	TObjectPtr<USkillLockComponent> SkillLockComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UWidgetComponent> HealthWidget;
 
 protected:
 	UPROPERTY(EditAnywhere)
-	UParticleSystem* ElimEffect;
+	TObjectPtr<UParticleSystem> ElimEffect;
 
 	UPROPERTY(EditAnywhere, Category = "Properties")
 	TSubclassOf<AWeaponBase> WeaponClass;
+
+	UPROPERTY(EditAnywhere, Category = "Properties")
+	TSubclassOf<AAimingFlat> AimingFlatClass;
+
+	UPROPERTY(EditAnywhere, Category = "Properties")
+	TSubclassOf<AAimingLaunch> AimingLaunchClass;
 
 	UPROPERTY()
 	AWeaponBase* Weapon;
@@ -125,7 +144,7 @@ protected:
 	FAimingManager AimingManager;
 
 	UPROPERTY()
-	FSkillMontage HeroSkills;
+	FSkillMontage HeroSkillMontage;
 
 	UPROPERTY()
 	FHeroSpeakLine SpeakLine;

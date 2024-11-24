@@ -58,16 +58,24 @@ private:
 	UFUNCTION()
 	void ViewportFinish();
 
-private:
+protected:
 	UPROPERTY(VisibleAnywhere)
-	UDecalComponent* AimingDecal;
+	TObjectPtr<UDecalComponent> AimingDecal;
 
 	UPROPERTY(VisibleAnywhere)
-	UGetActorScreenPointComponent* GetActorScreenPointComponent;
+	TObjectPtr<UGetActorScreenPointComponent> GetActorScreenPointComponent;
 
-private:
+	UPROPERTY(EditAnywhere, Category = "Decal")
+	TObjectPtr<UMaterialInterface> Decal_Rectangle;
+
+	UPROPERTY(EditAnywhere, Category = "Decal")
+	TObjectPtr<UMaterialInterface> Decal_Sector;
+
+	UPROPERTY(EditAnywhere, Category = "Decal")
+	TObjectPtr<UMaterialParameterCollection> Aim_Decal;
+
 	UPROPERTY()
-	AHeroBase* Hero;
+	TObjectPtr<AHeroBase> Hero;
 
 	UPROPERTY()
 	FAimInfo AimingInfo;

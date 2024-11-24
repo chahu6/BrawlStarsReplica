@@ -23,8 +23,7 @@ ABulletBase::ABulletBase()
 
 	Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
 	Sphere->SetupAttachment(RootComponent);
-	Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	//Sphere->SetCollisionProfileName("BulletOverlap");
+	Sphere->SetCollisionProfileName("BulletOverlap");
 	Sphere->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
 
 	BulletHead = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletHead"));
@@ -39,6 +38,8 @@ ABulletBase::ABulletBase()
 void ABulletBase::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
+
+	Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	const UBrawlStarsSettings* Setting = GetDefault<UBrawlStarsSettings>();
 

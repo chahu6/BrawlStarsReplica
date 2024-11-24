@@ -16,6 +16,7 @@
 #include "BrawlStars/BrawlStars.h"
 #include "UI/HUD/BrawlStarsHUD.h"
 #include "Settings/BrawlStarsSettings.h"
+#include "UI/Widget/BrawlStarsUserWidget.h"
 
 AHeroBase::AHeroBase()
 {
@@ -46,6 +47,10 @@ AHeroBase::AHeroBase()
 
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
 	HealthComponent->SetIsReplicated(true);
+
+	HealthWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthWidget"));
+	HealthWidget->SetupAttachment(RootComponent);
+	HealthWidget->SetWidgetSpace(EWidgetSpace::Screen);
 
 	SkillLockComponent = CreateDefaultSubobject<USkillLockComponent>(TEXT("SkillLock"));
 	SkillLockComponent->SetIsReplicated(true);
@@ -118,7 +123,7 @@ void AHeroBase::OnConstruction(const FTransform& Transform)
 			FSkillMontage* SkillMontage = DataTable->FindRow<FSkillMontage>(Elem, TEXT("AHeroBase"));
 			if (GetClass() == SkillMontage->HeroType)
 			{
-				HeroSkills = *SkillMontage;
+				HeroSkillMontage = *SkillMontage;
 				break;
 			}
 		}
@@ -143,6 +148,8 @@ void AHeroBase::OnConstruction(const FTransform& Transform)
 
 void AHeroBase::BeginPlay()
 {
+	BindCallbacksToDependencies();
+
 	Super::BeginPlay();
 
 	SpawnWeapon();
@@ -154,6 +161,17 @@ void AHeroBase::BeginPlay()
 	//ServerInitTeamType();
 
 	PlayHeroSpeakLine(EHeroSpeakLineType::ET_Spawn);
+}
+
+void AHeroBase::BindCallbacksToDependencies()
+{
+	HealthComponent->OnHealthChanged.AddLambda([this](float NewHealth) {
+		OnHealthChanged.Broadcast(NewHealth);
+	});
+
+	HealthComponent->OnMaxHealthChanged.AddLambda([this](float NewMaxHealth) {
+		OnMaxHealthChanged.Broadcast(NewMaxHealth);
+	});
 }
 
 void AHeroBase::Destroyed()
@@ -184,7 +202,7 @@ void AHeroBase::PossessedBy(AController* NewController)
 		PC->SetShowMouseCursor(true);
 	}
 
-	InitializeActorInfo();
+	//InitializeActorInfo();
 }
 
 void AHeroBase::OnRep_Controller()
@@ -196,7 +214,7 @@ void AHeroBase::OnRep_Controller()
 		PC->SetShowMouseCursor(true);
 	}
 
-	InitializeActorInfo();
+	//InitializeActorInfo();
 }
 
 void AHeroBase::InitializeActorInfo()
@@ -216,11 +234,11 @@ void AHeroBase::InitializeActorInfo()
 void AHeroBase::EquipFlatAimingManager()
 {
 	UWorld* World = GetWorld();
-	if (World)
+	if (World && AimingFlatClass)
 	{
 		FActorSpawnParameters SpawnParam;
 		SpawnParam.Owner = this;
-		AAimingFlat* FlatAiming = World->SpawnActor<AAimingFlat>(GetActorLocation(), FRotator::ZeroRotator, SpawnParam);
+		AAimingFlat* FlatAiming = World->SpawnActor<AAimingFlat>(AimingFlatClass, GetActorLocation(), FRotator::ZeroRotator, SpawnParam);
 		AimingManager.FlatAimingManager = FlatAiming;
 		AimingManager.FlatAimingManager->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
 	}
@@ -229,11 +247,11 @@ void AHeroBase::EquipFlatAimingManager()
 void AHeroBase::EquipLaunchAimingManager()
 {
 	UWorld* World = GetWorld();
-	if (World)
+	if (World && AimingLaunchClass)
 	{
 		FActorSpawnParameters SpawnParam;
 		SpawnParam.Owner = this;
-		AAimingLaunch* LaunchAiming = World->SpawnActor<AAimingLaunch>(GetActorLocation(), FRotator::ZeroRotator, SpawnParam);
+		AAimingLaunch* LaunchAiming = World->SpawnActor<AAimingLaunch>(AimingLaunchClass, GetActorLocation(), FRotator::ZeroRotator, SpawnParam);
 		AimingManager.LaunchAimingManager = LaunchAiming;
 		AimingManager.LaunchAimingManager->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
 	}
@@ -266,6 +284,8 @@ void AHeroBase::HeroDie()
 			GetActorLocation()
 		);
 	}
+
+	Destroy();
 }
 
 void AHeroBase::SaveUltimateCurrent()
@@ -351,6 +371,14 @@ void AHeroBase::InitHealthWidget()
 	else
 	{
 		//HealthWidget->SetVisibility(false);
+	}
+
+	if (UBrawlStarsUserWidget* BSWidget = Cast<UBrawlStarsUserWidget>(HealthWidget->GetWidget()))
+	{
+		BSWidget->SetWidgetController(this);
+
+		OnHealthChanged.Broadcast(HealthComponent->GetCurrentHealth());
+		OnMaxHealthChanged.Broadcast(HealthComponent->GetMaxHealth());
 	}
 }
 

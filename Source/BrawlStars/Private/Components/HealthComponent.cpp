@@ -40,7 +40,7 @@ void UHealthComponent::OnRecevieDamage(AActor* DamagedActor, float Damage, const
 
 			if (AHeroBase* Hero = GetOwner<AHeroBase>())
 			{
-				//Hero->HeroDie();
+				Hero->HeroDie();
 			}
 			else
 			{

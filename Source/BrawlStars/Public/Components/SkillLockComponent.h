@@ -26,7 +26,7 @@ struct FSkillState
 	bool bIsNormalActivated;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bIsNormalEnd;
+	bool bIsNormalEnd = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bIsUltimateReady;
@@ -35,7 +35,7 @@ struct FSkillState
 	bool bIsUltimateActivated;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bIsUltimateEnd;
+	bool bIsUltimateEnd = true;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -81,7 +81,6 @@ public:
 	FSkillState SkillState;
 
 private:
-
 	float NormalSkillMax;
 	float NormalSkillCurrent;
 	float NormalSKillRechageTime;

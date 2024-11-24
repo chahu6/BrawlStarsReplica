@@ -1,5 +1,5 @@
 #include "Components/HealthComponent.h"
-#include "Hero/Base/HeroBase.h"
+#include "Hero/HeroBase.h"
 #include "Net/UnrealNetwork.h"
 
 UHealthComponent::UHealthComponent()

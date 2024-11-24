@@ -1,5 +1,5 @@
 #include "Animation/HeroAnimInstance.h"
-#include "Hero/Base/HeroBase.h"
+#include "Hero/HeroBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 void UHeroAnimInstance::NativeInitializeAnimation()

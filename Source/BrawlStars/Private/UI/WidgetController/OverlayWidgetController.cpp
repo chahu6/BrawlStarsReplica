@@ -2,7 +2,7 @@
 
 
 #include "UI/WidgetController/OverlayWidgetController.h"
-#include "Hero/Base/HeroBase.h"
+#include "Hero/HeroBase.h"
 #include "Components/HealthComponent.h"
 
 void UOverlayWidgetController::BroadcastInitialValue()

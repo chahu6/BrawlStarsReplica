@@ -26,7 +26,7 @@ bool UGetActorScreenPointComponent::GetActorScreenPoint(FVector2D& GetActorScree
 			PlayerController->SetMouseLocation(FMath::TruncToInt(ScreenLocation.X), FMath::TruncToInt(ScreenLocation.Y));
 		}
 
-		FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(this);
+		const FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(this);
 		if (MousePosition.X > 0.0f && MousePosition.Y > 0.0f)
 		{
 			GetActorScreenPoint = ScreenLocation;

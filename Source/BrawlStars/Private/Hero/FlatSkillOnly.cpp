@@ -75,7 +75,9 @@ void AFlatSkillOnly::ReleaseSkill(float InReleaseRotationOffset, bool bNormalSki
 	SkillClass = InSkillClass;
 	bIsNormalSkill = bNormalSkill;
 
+	FOnMontageEnded MontageEndedDelegate;
 	MontageEndedDelegate.BindUObject(this, &AFlatSkillOnly::OnMontageEnded);
+
 	GetMesh()->GetAnimInstance()->Montage_SetEndDelegate(MontageEndedDelegate, InMontage);
 	if (!GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.Contains(this, "OnNotifyBeginReceived"))
 	{

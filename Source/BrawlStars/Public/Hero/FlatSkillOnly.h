@@ -43,8 +43,6 @@ private:
 	void UnbindDelegates();
 
 private:
-	FOnMontageEnded MontageEndedDelegate;
-
 	UPROPERTY()
 	TSubclassOf<ASkillBase> SkillClass;
 

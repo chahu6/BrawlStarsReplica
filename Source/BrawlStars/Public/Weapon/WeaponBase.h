@@ -20,6 +20,6 @@ public:
 
 protected:
 	UPROPERTY(VisibleAnywhere)
-	USkeletalMeshComponent* Weapon;
+	TObjectPtr<USkeletalMeshComponent> Weapon;
 
 };

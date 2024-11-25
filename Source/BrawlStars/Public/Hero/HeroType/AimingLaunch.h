@@ -1,21 +1,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "Hero/HeroType/AimingFlat.h"
 #include "AimingLaunch.generated.h"
 
 UCLASS()
-class BRAWLSTARS_API AAimingLaunch : public AActor
+class BRAWLSTARS_API AAimingLaunch : public AAimingFlat
 {
 	GENERATED_BODY()
 	
 public:	
 	AAimingLaunch();
 
-protected:
-	virtual void BeginPlay() override;
-
-public:	
 	virtual void Tick(float DeltaTime) override;
+
+protected:
+	UFUNCTION(BlueprintCallable)
+	void ReleaseLaunchSkill(AActor* ActorLaunch);
 
 };

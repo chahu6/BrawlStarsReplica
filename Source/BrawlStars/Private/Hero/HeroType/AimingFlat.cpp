@@ -85,20 +85,19 @@ void AAimingFlat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 void AAimingFlat::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (!IsValid(Hero)) return;
 	
 	FlatAimingManager();
 }
 
 void AAimingFlat::FlatAimingManager()
 {
-	if (Hero == nullptr || !Hero->IsLocallyControlled()) return;
+	if (!IsValid(Hero) || !Hero->IsLocallyControlled()) return;
 
 	if (AimingInfo.bIsFlatAiming)
 	{
 		UpdateDecalShap();
 		UpdateAimDistanceAndRotation();
+
 		if (NotAIControlled() && FMath::Abs(AimingInfo.AimDistance) > 1.0f)
 		{
 			AimingDecal->SetVisibility(true);
@@ -118,13 +117,12 @@ void AAimingFlat::FlatAimingManager()
 
 void AAimingFlat::CenterMousePosition()
 {
-	int64 X = FMath::TruncToInt(AimingInfo.ViewportCentrePoint.X);
-	int64 Y = FMath::TruncToInt(AimingInfo.ViewportCentrePoint.Y);
+	const int64 X = FMath::TruncToInt(AimingInfo.ViewportCentrePoint.X);
+	const int64 Y = FMath::TruncToInt(AimingInfo.ViewportCentrePoint.Y);
 
 	APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
 	if (PC && PC->IsLocalController() && NotAIControlled())
 	{
-		
 		PC->SetMouseLocation(X, Y);
 	}
 }
@@ -257,11 +255,11 @@ void AAimingFlat::UpdateAimDistanceAndRotation()
 {
 	if (NotAIControlled())
 	{
-		FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(this);
+		const FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(this);
 		if (!AimingInfo.RealViewportCenterMousePoint.Equals(MousePosition, 0.0001))
 		{
-			FVector2D Temp_Position = (AimingInfo.RealViewportCenterMousePoint - MousePosition);
-			float NewAimDistance = Temp_Position.Size();
+			const FVector2D Temp_Position = (AimingInfo.RealViewportCenterMousePoint - MousePosition);
+			const float NewAimDistance = Temp_Position.Size();
 			float NewAimRotationZ = UKismetMathLibrary::DegAtan2(Temp_Position.X * -1.0f, Temp_Position.Y);
 			AGameBaseController* GameBase = Cast<AGameBaseController>(UGameplayStatics::GetPlayerController(this, 0));
 			if (GameBase)

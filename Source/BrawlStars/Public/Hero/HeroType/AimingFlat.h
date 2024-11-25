@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "../DataInfo/DataInfo.h"
+#include "Hero/DataInfo/DataInfo.h"
 #include "Utils/DoOnce.h"
 #include "AimingFlat.generated.h"
 
@@ -14,39 +14,42 @@ class BRAWLSTARS_API AAimingFlat : public AActor
 {
 	GENERATED_BODY()
 	
-	friend class AFlatSkillOnly;
 public:	
 	AAimingFlat();
 
-protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void BeginPlay() override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-public:	
 	virtual void Tick(float DeltaTime) override;
 
 	void CenterMousePosition();
 
+	UFUNCTION(BlueprintCallable)
 	void SkillMontageStop();
 
+	UFUNCTION(BlueprintCallable)
 	void SetHeroSkillReleaseRotation(float AddModify);
 
+	UFUNCTION(BlueprintCallable)
 	void LockMovementOrientRotation();
 
+	UFUNCTION(BlueprintCallable)
 	void UnlockMovementOrientRotation();
 
 	void PlayMontage(UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName);
 
 	void ReleaseFlatSkill(const TSubclassOf<ASkillBase>& InSkillClass);
 
+	UPROPERTY()
+	FAimInfo AimingInfo;
+
 protected:
 	void InitAimingScreenPoint();
 
 	bool NotAIControlled();
 
-private:
 	void FlatAimingManager();
 
 	void UpdateDecalShap();
@@ -76,9 +79,6 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<AHeroBase> Hero;
-
-	UPROPERTY()
-	FAimInfo AimingInfo;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Properties")
 	float DecalAngleNormal;

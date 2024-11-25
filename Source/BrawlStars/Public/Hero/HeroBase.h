@@ -139,12 +139,12 @@ protected:
 	TSubclassOf<AAimingLaunch> AimingLaunchClass;
 
 	UPROPERTY()
-	AWeaponBase* Weapon;
+	TObjectPtr<AWeaponBase> Weapon;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(BlueprintReadOnly, Replicated)
 	FAimingManager AimingManager;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	FSkillMontage HeroSkillMontage;
 
 	UPROPERTY()

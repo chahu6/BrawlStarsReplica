@@ -81,6 +81,7 @@ protected:
 	void NormalSkillButtonOnPressed();
 	void NormalSkillButtonOnReleased();
 	void UltimateSkillButtonOnPressed();
+	void UltimateSkillButtonOnReleased();
 	void GameSettingButtonOnPressed();
 
 	void MoveForward(float Value);
@@ -118,7 +119,7 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UHealthComponent> HealthComponent;
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<USkillLockComponent> SkillLockComponent;
 
 	UPROPERTY(VisibleAnywhere)

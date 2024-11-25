@@ -29,8 +29,8 @@ void AFlatSkillOnly::ReleaseNormalSkill()
 
 	AimingManager.FlatAimingManager->AimingInfo.bIsFlatAiming = false;
 
-	ReleaseSkill(HeroSkillMontage.NormalReleaseOffset, true, HeroSkillMontage.NormalMontage, HeroSkillMontage.NormalMontageSection, HeroSkillMontage.NormalSkillType);
-	ServerReleaseSkill(AimingManager.FlatAimingManager->AimingInfo, HeroSkillMontage.NormalReleaseOffset, true, HeroSkillMontage.NormalMontage, HeroSkillMontage.NormalMontageSection, HeroSkillMontage.NormalSkillType);
+	ReleaseSkill(HeroSkillMontage.NormalReleaseOffset, true, HeroSkillMontage.NormalMontage, HeroSkillMontage.NormalMontageSection, HeroSkillMontage.NormalSkillClass);
+	ServerReleaseSkill(AimingManager.FlatAimingManager->AimingInfo, HeroSkillMontage.NormalReleaseOffset, true, HeroSkillMontage.NormalMontage, HeroSkillMontage.NormalMontageSection, HeroSkillMontage.NormalSkillClass);
 }
 
 void AFlatSkillOnly::ActiveUltimateSkill()
@@ -45,36 +45,38 @@ void AFlatSkillOnly::ReleaseUltimateSkill()
 {
 	if (AimingManager.FlatAimingManager == nullptr) return;
 
+	AimingManager.FlatAimingManager->AimingInfo.bIsFlatAiming = false;
 
+	ReleaseSkill(HeroSkillMontage.UltimateReleaseOffset, false, HeroSkillMontage.UltimateMontage, HeroSkillMontage.UltimateMontageSection, HeroSkillMontage.UltimateSkillClass);
 }
 
-void AFlatSkillOnly::ServerReleaseSkill_Implementation(const FAimInfo& AimInfo, float ReleaseRotationOffset, bool bNormalSkill, UAnimMontage* Montage, FName MontageSection, TSubclassOf<ASkillBase> SkillType)
+void AFlatSkillOnly::ServerReleaseSkill_Implementation(const FAimInfo& AimInfo, float ReleaseRotationOffset, bool bNormalSkill, UAnimMontage* Montage, FName MontageSection, TSubclassOf<ASkillBase> InSkillClass)
 {
-	MulticastReleaseSkill(AimInfo, ReleaseRotationOffset, bNormalSkill, Montage, MontageSection, SkillType);
+	MulticastReleaseSkill(AimInfo, ReleaseRotationOffset, bNormalSkill, Montage, MontageSection, InSkillClass);
 }
 
-void AFlatSkillOnly::MulticastReleaseSkill_Implementation(const FAimInfo& AimInfo, float ReleaseRotationOffset, bool bNormalSkill, UAnimMontage* Montage, FName MontageSection, TSubclassOf<ASkillBase> SkillType)
+void AFlatSkillOnly::MulticastReleaseSkill_Implementation(const FAimInfo& AimInfo, float ReleaseRotationOffset, bool bNormalSkill, UAnimMontage* Montage, FName MontageSection, TSubclassOf<ASkillBase> InSkillClass)
 {
 	if (IsLocallyControlled()) return;
 
 	AimingManager.FlatAimingManager->AimingInfo = AimInfo;
-	ReleaseSkill(ReleaseRotationOffset, bNormalSkill, Montage, MontageSection, SkillType);
+	ReleaseSkill(ReleaseRotationOffset, bNormalSkill, Montage, MontageSection, InSkillClass);
 }
 
-void AFlatSkillOnly::ReleaseSkill(float ReleaseRotationOffset, bool bNormalSkill, UAnimMontage* Montage, FName MontageSection, TSubclassOf<ASkillBase> SkillType)
+void AFlatSkillOnly::ReleaseSkill(float InReleaseRotationOffset, bool bNormalSkill, UAnimMontage* InMontage, FName InMontageSection, TSubclassOf<ASkillBase> InSkillClass)
 {
 	if (GetMesh() == nullptr || GetMesh()->GetAnimInstance() == nullptr || AimingManager.FlatAimingManager == nullptr) return;
 
 	AimingManager.FlatAimingManager->SkillMontageStop();
-	AimingManager.FlatAimingManager->SetHeroSkillReleaseRotation(ReleaseRotationOffset);
+	AimingManager.FlatAimingManager->SetHeroSkillReleaseRotation(InReleaseRotationOffset);
 	AimingManager.FlatAimingManager->LockMovementOrientRotation();
-	AimingManager.FlatAimingManager->PlayMontage(Montage, 1.0f, MontageSection);
+	AimingManager.FlatAimingManager->PlayMontage(InMontage, 1.0f, InMontageSection);
 
-	SkillClass = SkillType;
+	SkillClass = InSkillClass;
 	bIsNormalSkill = bNormalSkill;
 
 	MontageEndedDelegate.BindUObject(this, &AFlatSkillOnly::OnMontageEnded);
-	GetMesh()->GetAnimInstance()->Montage_SetEndDelegate(MontageEndedDelegate, Montage);
+	GetMesh()->GetAnimInstance()->Montage_SetEndDelegate(MontageEndedDelegate, InMontage);
 	if (!GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.Contains(this, "OnNotifyBeginReceived"))
 	{
 		GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &AFlatSkillOnly::OnNotifyBeginReceived);

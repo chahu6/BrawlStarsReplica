@@ -14,25 +14,25 @@ struct FSkillState
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bIsSkillPressEnable;
+	bool bIsSkillPressEnable = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bIsSkillReleaseEnable;
+	bool bIsSkillReleaseEnable = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bIsNormalReady;
+	bool bIsNormalReady = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bIsNormalActivated;
+	bool bIsNormalActivated = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bIsNormalEnd = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bIsUltimateReady;
+	bool bIsUltimateReady = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bIsUltimateActivated;
+	bool bIsUltimateActivated = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bIsUltimateEnd = true;
@@ -62,6 +62,9 @@ private:
 	bool CheckActivatableNormal();
 	bool CheckReleaseableNormal();
 
+	bool CheckActivatableUltimate();
+	bool CheckReleaseableUltimate();
+
 	void RechageUltimateSkill();
 	void ResetNormalLock();
 	void ResetUltimateLock();
@@ -80,18 +83,33 @@ private:
 public:
 	FSkillState SkillState;
 
-private:
+protected:
+	UPROPERTY()
 	float NormalSkillMax;
+
+	UPROPERTY(BlueprintReadOnly)
 	float NormalSkillCurrent;
+
+	UPROPERTY()
 	float NormalSKillRechageTime;
+
 	FTimerHandle NormalSkillRechageTimer;
 
+	UPROPERTY()
 	float UltimateEnergyDefault;
+
+	UPROPERTY()
 	float UltimateEnergyCurrent;
 
+	UPROPERTY()
 	bool bNormalButtonPressed;
-	bool bNormalButtonReleased = true;;
 
+	UPROPERTY()
+	bool bNormalButtonReleased = true;
+
+	UPROPERTY()
 	bool bUltimateButtonPressed;
+
+	UPROPERTY()
 	bool bUltimateButtonReleased = true;
 };

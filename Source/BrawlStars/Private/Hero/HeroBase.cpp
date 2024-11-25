@@ -108,7 +108,6 @@ void AHeroBase::OnConstruction(const FTransform& Transform)
 				{
 					SkillLockComponent->UltimateEnergyDefault = SkillInfo->SkillRechage;
 				}
-				break;
 			}
 		}
 	}
@@ -285,6 +284,8 @@ void AHeroBase::HeroDie()
 		);
 	}
 
+	PlayHeroSpeakLine(EHeroSpeakLineType::ET_Die);
+
 	Destroy();
 }
 
@@ -303,24 +304,23 @@ void AHeroBase::NormalSkillButtonOnPressed()
 	if (SkillLockComponent->CheckPhysicsBottonNormal(true))
 	{
 		// 充能检查
-		//if (SkillLockComponent->CheckActivatableNormal())
+		if (SkillLockComponent->CheckActivatableNormal())
 		{
 			ActiveNormalSkill();
 		}
 	}
-
 }
 
 void AHeroBase::NormalSkillButtonOnReleased()
 {
 	if (SkillLockComponent->CheckPhysicsBottonNormal(false))
 	{
-		//if (SkillLockComponent->CheckReleaseableNormal())
+		if (SkillLockComponent->CheckReleaseableNormal())
 		{
 			// 释放技能
 			ReleaseNormalSkill();
 			// 释放技能打断回血
-			//HealthComponent->MultiResetRestedTime();
+			HealthComponent->MultiResetRestedTime();
 			// 释放技能时的台词
 			PlayHeroSpeakLine(EHeroSpeakLineType::ET_NormalSkill);
 		}
@@ -329,7 +329,31 @@ void AHeroBase::NormalSkillButtonOnReleased()
 
 void AHeroBase::UltimateSkillButtonOnPressed()
 {
+	// 物理检查
+	if (SkillLockComponent->CheckPhysicsBottonNormal(true))
+	{
+		// 充能检查
+		if (SkillLockComponent->CheckActivatableUltimate())
+		{
+			ActiveUltimateSkill();
+		}
+	}
+}
 
+void AHeroBase::UltimateSkillButtonOnReleased()
+{
+	if (SkillLockComponent->CheckPhysicsBottonNormal(false))
+	{
+		if (SkillLockComponent->CheckReleaseableUltimate())
+		{
+			// 释放技能
+			ReleaseUltimateSkill();
+			// 释放技能打断回血
+			HealthComponent->MultiResetRestedTime();
+			// 释放技能时的台词
+			PlayHeroSpeakLine(EHeroSpeakLineType::ET_UltimateSkill);
+		}
+	}
 }
 
 void AHeroBase::GameSettingButtonOnPressed()
@@ -477,5 +501,6 @@ void AHeroBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("NormalSkill", IE_Pressed, this, &ThisClass::NormalSkillButtonOnPressed);
 	PlayerInputComponent->BindAction("NormalSkill", IE_Released, this, &ThisClass::NormalSkillButtonOnReleased);
 	PlayerInputComponent->BindAction("UltimateSkill", IE_Pressed, this, &ThisClass::UltimateSkillButtonOnPressed);
+	PlayerInputComponent->BindAction("UltimateSkill", IE_Released, this, &ThisClass::UltimateSkillButtonOnReleased);
 	PlayerInputComponent->BindAction("GameSetting", IE_Pressed, this, &ThisClass::GameSettingButtonOnPressed);
 }

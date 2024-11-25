@@ -1,6 +1,7 @@
 #include "Components/HealthComponent.h"
 #include "Hero/HeroBase.h"
 #include "Net/UnrealNetwork.h"
+#include "UI/Widget/DamageTextComponent.h"
 
 UHealthComponent::UHealthComponent()
 {
@@ -67,6 +68,15 @@ void UHealthComponent::MultiResetRestedTime_Implementation()
 
 void UHealthComponent::MultiShowDamage_Implementation(float Damage)
 {
-	//GetOwner()
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("ShowDamage"));
+	if (DamageTextComponentClass)
+	{
+		UDamageTextComponent* DamageText = NewObject<UDamageTextComponent>(GetOwner(), DamageTextComponentClass);
+		DamageText->RegisterComponent();
+		DamageText->AttachToComponent(GetOwner()->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+		FVector RandomOffset = FMath::VRand() * 50.f;
+		RandomOffset.Z = 0.f;
+		DamageText->SetRelativeLocation(RandomOffset);
+		DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+		DamageText->SetDamageText(Damage);
+	}
 }

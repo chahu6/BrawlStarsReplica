@@ -114,7 +114,7 @@ struct FSkillMontage : public FTableRowBase
 	FName NormalMontageSection;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GameplayTag")
-	TSubclassOf<ASkillBase> NormalSkillType;
+	TSubclassOf<ASkillBase> NormalSkillClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GameplayTag")
 	float UltimateReleaseOffset;
@@ -126,7 +126,7 @@ struct FSkillMontage : public FTableRowBase
 	FName UltimateMontageSection;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GameplayTag")
-	TSubclassOf<ASkillBase> UltimateSkillType;
+	TSubclassOf<ASkillBase> UltimateSkillClass;
 };
 
 USTRUCT(BlueprintType)

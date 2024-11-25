@@ -13,6 +13,7 @@ void USkillLockComponent::BeginPlay()
 	NormalSkillCurrent = NormalSkillMax;
 
 	GetWorld()->GetTimerManager().SetTimer(NormalSkillRechageTimer, this, &USkillLockComponent::NormalBulletRechage, 0.1f, true);
+
 	UltimateRechage.AddUObject(this, &USkillLockComponent::RechageUltimateSkill);
 	NormalSkillFinished.AddUObject(this, &USkillLockComponent::ResetNormalLock);
 	UltimateSkillFinished.AddUObject(this, &USkillLockComponent::ResetUltimateLock);
@@ -73,20 +74,17 @@ bool USkillLockComponent::CheckActivatableNormal()
 		{
 			ServerSetSkillReleasable(SkillState);
 		}
-	}
-	else
-	{
-		return false;
+		return true;
 	}
 
-	return true;
+	return false;
 }
 
 bool USkillLockComponent::CheckReleaseableNormal()
 {
 	if (SkillState.bIsSkillReleaseEnable && SkillState.bIsNormalReady && SkillState.bIsNormalActivated && SkillState.bIsNormalEnd && SkillState.bIsUltimateEnd)
 	{
-		NormalSkillCurrent -= 1.0f;
+		NormalSkillCurrent = FMath::Clamp(NormalSkillCurrent - 1.f, 0, NormalSkillMax);
 		SkillState.bIsNormalActivated = false;
 		SkillState.bIsNormalEnd = false;
 		
@@ -95,13 +93,42 @@ bool USkillLockComponent::CheckReleaseableNormal()
 			ServerSetSkillReleasable(SkillState);
 			ServerSetSkillAmountCurrent(NormalSkillCurrent);
 		}
-	}
-	else
-	{
-		return false;
+		return true;
 	}
 
-	return true;
+	return false;
+}
+
+bool USkillLockComponent::CheckActivatableUltimate()
+{
+	if (SkillState.bIsSkillPressEnable && SkillState.bIsUltimateReady && SkillState.bIsUltimateEnd)
+	{
+		SkillState.bIsUltimateActivated = true;
+		SkillState.bIsSkillPressEnable = false;
+		if (GetWorld()->GetNetMode() == NM_Client)
+		{
+			ServerSetSkillReleasable(SkillState);
+		}
+		return true;
+	}
+	return false;
+}
+
+bool USkillLockComponent::CheckReleaseableUltimate()
+{
+	if (SkillState.bIsSkillReleaseEnable && SkillState.bIsUltimateReady && SkillState.bIsUltimateActivated && SkillState.bIsUltimateEnd)
+	{
+		SkillState.bIsSkillPressEnable = false;
+		SkillState.bIsNormalEnd = true;
+		SkillState.bIsNormalActivated = false;
+		SkillState.bIsUltimateEnd = false;
+		if (GetWorld()->GetNetMode() == NM_Client)
+		{
+			ServerSetSkillReleasable(SkillState);
+		}
+		return true;
+	}
+	return false;
 }
 
 void USkillLockComponent::RechageUltimateSkill()
@@ -133,7 +160,7 @@ void USkillLockComponent::ResetUltimateLock()
 
 void USkillLockComponent::NormalBulletRechage()
 {
-	float Value = NormalSkillCurrent + (0.1f / NormalSKillRechageTime);
+	const float Value = NormalSkillCurrent + (0.1f / NormalSKillRechageTime);
 	NormalSkillCurrent = FMath::Clamp(Value, 0.0f, NormalSkillMax);
 }
 
@@ -192,7 +219,7 @@ void USkillLockComponent::CheckUltimateSkillReady()
 	}
 	else
 	{
-		SkillState.bIsUltimateReady = false;
+		SkillState.bIsUltimateReady = true;
 	}
 }
 

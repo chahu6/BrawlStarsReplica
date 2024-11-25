@@ -6,6 +6,8 @@
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, float);
 
+class UDamageTextComponent;
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BRAWLSTARS_API UHealthComponent : public UActorComponent
@@ -36,7 +38,10 @@ private:
 	UFUNCTION()
 	void OnRecevieDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
-private:
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
+
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentHealth)
 	float CurrentHealth;
 	UFUNCTION()

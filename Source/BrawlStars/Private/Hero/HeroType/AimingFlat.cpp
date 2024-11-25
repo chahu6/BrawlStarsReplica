@@ -170,7 +170,7 @@ void AAimingFlat::PlayMontage(UAnimMontage* AnimMontage, float InPlayRate, FName
 	}
 }
 
-void AAimingFlat::ReleaseFlatSkill(const TSubclassOf<ASkillBase>& SkillType)
+void AAimingFlat::ReleaseFlatSkill(const TSubclassOf<ASkillBase>& InSkillClass)
 {
 	if (IsValid(Hero))
 	{
@@ -183,7 +183,7 @@ void AAimingFlat::ReleaseFlatSkill(const TSubclassOf<ASkillBase>& SkillType)
 			SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 			SpawnParameters.Instigator = Hero;
 			SpawnParameters.Owner = GetOwner();
-			GetWorld()->SpawnActor<ASkillBase>(SkillType, SocketLocation, Hero->GetCapsuleComponent()->GetForwardVector().ToOrientationRotator(), SpawnParameters);
+			GetWorld()->SpawnActor<ASkillBase>(InSkillClass, SocketLocation, Hero->GetCapsuleComponent()->GetForwardVector().ToOrientationRotator(), SpawnParameters);
 		}
 	}
 }

@@ -31,7 +31,7 @@ void AFlatAndLaunch::ActiveUltimateSkill()
 {
 	if (AimingManager.LaunchAimingManager == nullptr) return;
 
-	AimingManager.LaunchAimingManager->AimingInfo.bIsFlatAiming = true;
+	AimingManager.LaunchAimingManager->AimingInfo.bIsLaunchAming = true;
 	AimingManager.LaunchAimingManager->CenterMousePosition();
 }
 
@@ -39,7 +39,7 @@ void AFlatAndLaunch::ReleaseUltimateSkill()
 {
 	if (AimingManager.LaunchAimingManager == nullptr) return;
 
-	AimingManager.LaunchAimingManager->AimingInfo.bIsFlatAiming = false;
+	AimingManager.LaunchAimingManager->AimingInfo.bIsLaunchAming = false;
 	UltimateLaunchSkill();
 }
 

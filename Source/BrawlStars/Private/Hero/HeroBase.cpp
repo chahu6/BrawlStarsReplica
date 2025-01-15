@@ -232,11 +232,13 @@ void AHeroBase::InitializeActorInfo()
 
 void AHeroBase::EquipFlatAimingManager()
 {
+	ensure(AimingFlatClass);
 	UWorld* World = GetWorld();
 	if (World && AimingFlatClass)
 	{
 		FActorSpawnParameters SpawnParam;
 		SpawnParam.Owner = this;
+		SpawnParam.Instigator = this;
 		AAimingFlat* FlatAiming = World->SpawnActor<AAimingFlat>(AimingFlatClass, GetActorLocation(), FRotator::ZeroRotator, SpawnParam);
 		AimingManager.FlatAimingManager = FlatAiming;
 		AimingManager.FlatAimingManager->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
@@ -245,11 +247,13 @@ void AHeroBase::EquipFlatAimingManager()
 
 void AHeroBase::EquipLaunchAimingManager()
 {
+	ensure(AimingLaunchClass);
 	UWorld* World = GetWorld();
 	if (World && AimingLaunchClass)
 	{
 		FActorSpawnParameters SpawnParam;
 		SpawnParam.Owner = this;
+		SpawnParam.Instigator = this;
 		AAimingLaunch* LaunchAiming = World->SpawnActor<AAimingLaunch>(AimingLaunchClass, GetActorLocation(), FRotator::ZeroRotator, SpawnParam);
 		AimingManager.LaunchAimingManager = LaunchAiming;
 		AimingManager.LaunchAimingManager->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);

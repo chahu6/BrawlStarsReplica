@@ -206,3 +206,24 @@ struct FAimInfo
 	UPROPERTY()
 	float AimRotationYaw;
 };
+
+USTRUCT(BlueprintType)
+struct FLaunchDistance
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY()
+	float AimDistanceOld = 0.f;
+
+	UPROPERTY()
+	float LaunchDistance = 0.f;
+
+	UPROPERTY()
+	float AimDistanceMax = 10000.0f;
+
+	UPROPERTY()
+	FVector LaunchVelocity = FVector::ZeroVector;
+
+	UPROPERTY()
+	float LaunchVelocityMax = 1000.0f;
+};

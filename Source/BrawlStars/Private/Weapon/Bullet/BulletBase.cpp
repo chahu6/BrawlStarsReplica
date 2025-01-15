@@ -98,6 +98,19 @@ void ABulletBase::PostInitializeComponents()
 	}
 }
 
+void ABulletBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (IsValid(BulletSoundEffect))
+	{
+		//if (BulletSoundAttenuation)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, BulletSoundEffect, GetActorLocation(), BulletSoundVolume, 1.0f, 0.0f, BulletSoundAttenuation);
+		}
+	}
+}
+
 void ABulletBase::OnCubeBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor == GetOwner()) return;
@@ -140,17 +153,4 @@ void ABulletBase::ApplyDamageAndDestroy()
 {
 	UGameplayStatics::ApplyDamage(Enemy, Damage, nullptr, this, UDamageType::StaticClass());
 	Destroy();
-}
-
-void ABulletBase::BeginPlay()
-{
-	Super::BeginPlay();
-	
-	if (IsValid(BulletSoundEffect))
-	{
-		//if (BulletSoundAttenuation)
-		{
-			UGameplayStatics::PlaySoundAtLocation(this, BulletSoundEffect, GetActorLocation(), BulletSoundVolume, 1.0f, 0.0f, BulletSoundAttenuation);
-		}
-	}
 }

@@ -4,9 +4,9 @@
 #include "Components/ActorComponent.h"
 #include "SkillLockComponent.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnNormalSkillFinished);
-DECLARE_MULTICAST_DELEGATE(FOnUltimateSkillFinished);
-DECLARE_MULTICAST_DELEGATE(FOnUltimateRechage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNormalSkillFinished);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUltimateSkillFinished);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUltimateRechage);
 
 USTRUCT(BlueprintType)
 struct FSkillState
@@ -55,6 +55,8 @@ public:
 
 	FOnUltimateRechage UltimateRechage;
 	FOnNormalSkillFinished NormalSkillFinished;
+
+	UPROPERTY(BlueprintCallable)
 	FOnUltimateSkillFinished UltimateSkillFinished;
 
 private:
@@ -65,9 +67,15 @@ private:
 	bool CheckActivatableUltimate();
 	bool CheckReleaseableUltimate();
 
+	UFUNCTION()
 	void RechageUltimateSkill();
+
+	UFUNCTION()
 	void ResetNormalLock();
+
+	UFUNCTION()
 	void ResetUltimateLock();
+
 	void NormalBulletRechage();
 
 	void CheckNormalSkillReady();

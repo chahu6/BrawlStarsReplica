@@ -14,9 +14,9 @@ void USkillLockComponent::BeginPlay()
 
 	GetWorld()->GetTimerManager().SetTimer(NormalSkillRechageTimer, this, &USkillLockComponent::NormalBulletRechage, 0.1f, true);
 
-	UltimateRechage.AddUObject(this, &USkillLockComponent::RechageUltimateSkill);
-	NormalSkillFinished.AddUObject(this, &USkillLockComponent::ResetNormalLock);
-	UltimateSkillFinished.AddUObject(this, &USkillLockComponent::ResetUltimateLock);
+	UltimateRechage.AddDynamic(this, &USkillLockComponent::RechageUltimateSkill);
+	NormalSkillFinished.AddDynamic(this, &USkillLockComponent::ResetNormalLock);
+	UltimateSkillFinished.AddDynamic(this, &USkillLockComponent::ResetUltimateLock);
 }
 
 void USkillLockComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

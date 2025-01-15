@@ -8,7 +8,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/SkillLockComponent.h"
 #include "Kismet/KismetMaterialLibrary.h"
-#include "Materials/MaterialParameterCollection.h"
 #include "Components/GetActorScreenPointComponent.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -258,9 +257,12 @@ void AAimingFlat::UpdateAimDistanceAndRotation()
 		const FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(this);
 		if (!AimingInfo.RealViewportCenterMousePoint.Equals(MousePosition, 0.0001))
 		{
-			const FVector2D Temp_Position = (AimingInfo.RealViewportCenterMousePoint - MousePosition);
-			const float NewAimDistance = Temp_Position.Size();
-			float NewAimRotationZ = UKismetMathLibrary::DegAtan2(Temp_Position.X * -1.0f, Temp_Position.Y);
+			const FVector2D ToDirection = (AimingInfo.RealViewportCenterMousePoint - MousePosition);
+			const float NewAimDistance = ToDirection.Size();
+			float NewAimRotationZ = UKismetMathLibrary::DegAtan2(ToDirection.X * -1.f, ToDirection.Y);
+
+			GEngine->AddOnScreenDebugMessage(12, 5.f, FColor::Green, FString::Printf(TEXT("AimRotationZ = %f"), NewAimRotationZ));
+
 			AGameBaseController* GameBase = Cast<AGameBaseController>(UGameplayStatics::GetPlayerController(this, 0));
 			if (GameBase)
 			{
@@ -269,11 +271,11 @@ void AAimingFlat::UpdateAimDistanceAndRotation()
 					NewAimRotationZ += 180.0f;
 				}
 			}
-			float AimRotationZ = AimingInfo.AimRotationYaw;
 
-			if (FMath::Abs(AimRotationZ - NewAimRotationZ) < 100.0f)
+			const float LastAimRotationZ = AimingInfo.AimRotationYaw;
+			if (FMath::Abs(LastAimRotationZ - NewAimRotationZ) < 100.0f)
 			{
-				NewAimRotationZ = FMath::FInterpTo(AimRotationZ, NewAimRotationZ, UGameplayStatics::GetWorldDeltaSeconds(this), 40.0f);
+				NewAimRotationZ = FMath::FInterpTo(LastAimRotationZ, NewAimRotationZ, UGameplayStatics::GetWorldDeltaSeconds(this), 40.0f);
 			}
 
 			AimingInfo.AimDistance = NewAimDistance;

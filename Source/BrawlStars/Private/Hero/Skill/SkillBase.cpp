@@ -5,6 +5,7 @@
 #include "Weapon/Bullet/BulletBase.h"
 #include "BrawlStars/BrawlStars.h"
 #include "Settings/BrawlStarsSettings.h"
+#include "BrawlStarsFunctionLibrary.h"
 
 ASkillBase::ASkillBase()
 {
@@ -38,19 +39,19 @@ void ASkillBase::BeginPlay()
 
 void ASkillBase::ReleaseBullet(const TSubclassOf<ABulletBase>& BulletType, int32 BulletCount, float SectorAngle)
 {
-	float SectorAngleSplit = SectorAngle / BulletCount;
-	FRotator Rotation = GetActorRotation();
-	FVector Location = GetActorLocation();
-	Rotation.Yaw -= SectorAngle / 2.0f;
+	const FVector Location = GetActorLocation();
+	const FRotator Rotation = GetActorRotation();
 
-	for (int32 i = 0; i < BulletCount; ++i)
+	TArray<FRotator> Rotations = UBrawlStarsFunctionLibrary::EvenlySpacedRotators(Rotation.Vector(), FVector::UpVector, SectorAngle, BulletCount);
+
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SpawnParameters.Instigator = GetInstigator();
+	SpawnParameters.Owner = GetOwner();
+
+	for (const FRotator& Rot : Rotations)
 	{
-		FActorSpawnParameters SpawnParameters;
-		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		SpawnParameters.Instigator = GetInstigator();
-		SpawnParameters.Owner = GetOwner();
-		GetWorld()->SpawnActor<ABulletBase>(BulletType, Location, Rotation, SpawnParameters);
-		Rotation.Yaw += SectorAngleSplit;
+		GetWorld()->SpawnActor<ABulletBase>(BulletType, Location, Rot, SpawnParameters);
 	}
 
 	Destroy();

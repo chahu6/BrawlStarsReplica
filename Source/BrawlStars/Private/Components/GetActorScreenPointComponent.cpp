@@ -7,20 +7,13 @@ UGetActorScreenPointComponent::UGetActorScreenPointComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UGetActorScreenPointComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-}
-
 bool UGetActorScreenPointComponent::GetActorScreenPoint(FVector2D& GetActorScreenPoint, FVector2D& GetActorScreenMousePoint)
 {
-	AActor* MyOwner = GetOwner();
-	if (MyOwner)
+	if (AActor* MyOwner = GetOwner())
 	{
-		FVector Location = MyOwner->GetActorLocation();
+		const FVector Location = MyOwner->GetActorLocation();
 		FVector2D ScreenLocation;
-		APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
-		if (PlayerController)
+		if (APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0))
 		{
 			PlayerController->ProjectWorldLocationToScreen(Location, ScreenLocation);
 			PlayerController->SetMouseLocation(FMath::TruncToInt(ScreenLocation.X), FMath::TruncToInt(ScreenLocation.Y));

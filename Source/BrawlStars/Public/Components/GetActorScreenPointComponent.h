@@ -15,9 +15,5 @@ class BRAWLSTARS_API UGetActorScreenPointComponent : public UActorComponent
 public:	
 	UGetActorScreenPointComponent();
 
-protected:
-	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-public:	
 	bool GetActorScreenPoint(FVector2D& GetActorScreenPoint, FVector2D& GetActorScreenMousePoint);
 };

@@ -62,7 +62,7 @@ protected:
 	void ViewportFinish();
 
 protected:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UDecalComponent> AimingDecal;
 
 	UPROPERTY(VisibleAnywhere)

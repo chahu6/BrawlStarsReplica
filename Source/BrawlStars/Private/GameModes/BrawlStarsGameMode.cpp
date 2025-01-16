@@ -1,5 +1,5 @@
 #include "GameModes/BrawlStarsGameMode.h"
-#include "Controller/Game/GameBaseController.h"
+#include "Controller/GameBaseController.h"
 #include "Kismet/GameplayStatics.h"
 
 void ABrawlStarsGameMode::OnPostLogin(AController* NewPlayer)

@@ -392,13 +392,9 @@ void AHeroBase::MoveRight(float Value)
 void AHeroBase::InitHealthWidget()
 {
 	FString LevelName = UGameplayStatics::GetCurrentLevelName(this);
-	if (!LevelName.Equals(TEXT("L_LoginStart")) && !LevelName.Equals(TEXT("L_LoginRoom")))
+	if (LevelName.Equals(TEXT("L_LoginStart")) || LevelName.Equals(TEXT("L_LoginRoom")))
 	{
-		//Cast<>(HealthWidget->GetUserWidgetObject());
-	}
-	else
-	{
-		//HealthWidget->SetVisibility(false);
+		HealthWidget->SetVisibility(false);
 	}
 
 	if (UBrawlStarsUserWidget* BSWidget = Cast<UBrawlStarsUserWidget>(HealthWidget->GetWidget()))

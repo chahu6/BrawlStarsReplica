@@ -1,4 +1,4 @@
-#include "Controller/Game/GameBaseController.h"
+#include "Controller/GameBaseController.h"
 
 void AGameBaseController::BeginPlay()
 {

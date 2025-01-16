@@ -11,7 +11,7 @@
 #include "Components/GetActorScreenPointComponent.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Controller/Game/GameBaseController.h"
+#include "Controller/GameBaseController.h"
 #include "Weapon/WeaponBase.h"
 #include "Components/CapsuleComponent.h"
 #include "Hero/Skill/SkillBase.h"

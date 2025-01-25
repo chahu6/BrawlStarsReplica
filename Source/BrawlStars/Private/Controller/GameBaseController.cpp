@@ -24,3 +24,8 @@ void AGameBaseController::PlayerControllerInputEnable()
 		ControlledPawn->EnableInput(this);
 	}
 }
+
+void AGameBaseController::GameIntroduction()
+{
+
+}

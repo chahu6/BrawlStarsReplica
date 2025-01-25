@@ -4,8 +4,12 @@
 
 void ABrawlStarsGameMode::OnPostLogin(AController* NewPlayer)
 {
-	//Cast<AGameBaseController>(NewPlayer);
-	//PlayerInputDisable();
+	//if (AGameBaseController* GameBaseController = Cast<AGameBaseController>(NewPlayer))
+	//{
+	//	GameBaseController->GameIntroduction();
+
+	//	++PlayerNumber;
+	//}
 }
 
 void ABrawlStarsGameMode::PlayerInputDisable()

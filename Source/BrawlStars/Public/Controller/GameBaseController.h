@@ -21,6 +21,8 @@ public:
 	void PlayerControllerInputDisable();
 	void PlayerControllerInputEnable();
 
+	void GameIntroduction();
+
 private:
 	ETeamType TeamType;
 

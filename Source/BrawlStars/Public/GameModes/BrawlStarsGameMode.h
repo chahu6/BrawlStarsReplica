@@ -13,10 +13,10 @@ UCLASS()
 class BRAWLSTARS_API ABrawlStarsGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+public:
+	void PlayerInputDisable();
+
 protected:
 	virtual void OnPostLogin(AController* NewPlayer) override;
 
-public:
-	void PlayerInputDisable();
 };

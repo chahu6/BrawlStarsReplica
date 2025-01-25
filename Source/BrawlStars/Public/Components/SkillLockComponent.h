@@ -89,6 +89,7 @@ private:
 	void ServerSetSkillAmountCurrent(float SkillAmountCurrent);
 
 public:
+	UPROPERTY(BlueprintReadOnly)
 	FSkillState SkillState;
 
 protected:

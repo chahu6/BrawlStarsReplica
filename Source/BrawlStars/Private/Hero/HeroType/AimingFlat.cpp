@@ -73,7 +73,14 @@ void AAimingFlat::BeginPlay()
 
 	Hero = Cast<AHeroBase>(GetOwner());
 
-	InitAimingScreenPoint();
+	Hero->ReceiveControllerChangedDelegate.AddDynamic(this, &ThisClass::InitAimingScreenPoint);
+}
+
+void AAimingFlat::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	Hero->ReceiveControllerChangedDelegate.RemoveDynamic(this, &ThisClass::InitAimingScreenPoint);
 }
 
 void AAimingFlat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -185,9 +192,9 @@ void AAimingFlat::ReleaseFlatSkill(const TSubclassOf<ASkillBase>& InSkillClass)
 	}
 }
 
-void AAimingFlat::InitAimingScreenPoint()
+void AAimingFlat::InitAimingScreenPoint(APawn* Pawn, AController* OldController, AController* NewController)
 {
-	bool bIsControlled = !Hero->IsBotControlled() && Hero->IsLocallyControlled();
+	const bool bIsControlled = !Hero->IsBotControlled() && Hero->IsLocallyControlled();
 	if (bIsControlled)
 	{
 		FLatentActionInfo LatentInfo(0, FMath::Rand(), TEXT("ViewportFinish"), this); // 等待Viewport初始化完成，不然位置就有问题

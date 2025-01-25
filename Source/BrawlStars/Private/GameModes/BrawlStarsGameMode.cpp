@@ -10,7 +10,7 @@ void ABrawlStarsGameMode::OnPostLogin(AController* NewPlayer)
 
 void ABrawlStarsGameMode::PlayerInputDisable()
 {
-	int32 PlayerNumber = GetNumPlayers();
+	const int32 PlayerNumber = GetNumPlayers();
 	for (int i = 0; i < PlayerNumber; ++i)
 	{
 		APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, i);

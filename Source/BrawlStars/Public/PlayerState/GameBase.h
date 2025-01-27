@@ -14,6 +14,6 @@ class BRAWLSTARS_API AGameBase : public APlayerState
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ETeamType TeamType;
 };

@@ -58,6 +58,8 @@ AHeroBase::AHeroBase()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 	GetCharacterMovement()->RotationRate = FRotator(0.0, 720.0, 0.0);
+
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void AHeroBase::OnConstruction(const FTransform& Transform)
@@ -155,7 +157,7 @@ void AHeroBase::BeginPlay()
 
 	OnTakeAnyDamage.AddDynamic(this, &AHeroBase::ShowDamageNum);
 
-	//ServerInitTeamType();
+	ServerInitTeamType();
 
 	PlayHeroSpeakLine(EHeroSpeakLineType::ET_Spawn);
 }

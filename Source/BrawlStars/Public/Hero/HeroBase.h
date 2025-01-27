@@ -139,7 +139,7 @@ protected:
 	UPROPERTY()
 	FHeroSpeakLine SpeakLine;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	ETeamType TeamType;
 
 	UPROPERTY(Replicated)

@@ -102,7 +102,7 @@ void AHeroBase::OnConstruction(const FTransform& Transform)
 				if (SkillInfo->SkillClassification == ESkillClassification::ESC_Normal)
 				{
 					SkillLockComponent->NormalSKillRechageTime = SkillInfo->SkillRechage;
-					SkillLockComponent->NormalSkillMax = SkillInfo->BulletAmmo;
+					SkillLockComponent->NormalSkillMaxAmount = SkillInfo->BulletAmmo;
 				}
 				else
 				{
@@ -147,8 +147,6 @@ void AHeroBase::OnConstruction(const FTransform& Transform)
 
 void AHeroBase::BeginPlay()
 {
-	BindCallbacksToDependencies();
-
 	Super::BeginPlay();
 
 	SpawnWeapon();
@@ -160,17 +158,6 @@ void AHeroBase::BeginPlay()
 	//ServerInitTeamType();
 
 	PlayHeroSpeakLine(EHeroSpeakLineType::ET_Spawn);
-}
-
-void AHeroBase::BindCallbacksToDependencies()
-{
-	HealthComponent->OnHealthChanged.AddLambda([this](float NewHealth) {
-		OnHealthChanged.Broadcast(NewHealth);
-	});
-
-	HealthComponent->OnMaxHealthChanged.AddLambda([this](float NewMaxHealth) {
-		OnMaxHealthChanged.Broadcast(NewMaxHealth);
-	});
 }
 
 void AHeroBase::Destroyed()
@@ -200,8 +187,6 @@ void AHeroBase::PossessedBy(AController* NewController)
 	{
 		PC->SetShowMouseCursor(true);
 	}
-
-	//InitializeActorInfo();
 }
 
 void AHeroBase::OnRep_Controller()
@@ -211,22 +196,6 @@ void AHeroBase::OnRep_Controller()
 	if (APlayerController* PC = Cast<APlayerController>(Controller))
 	{
 		PC->SetShowMouseCursor(true);
-	}
-
-	//InitializeActorInfo();
-}
-
-void AHeroBase::InitializeActorInfo()
-{
-	if (APlayerController* PC = GetController<APlayerController>())
-	{
-		if (ABrawlStarsHUD* BrawlStarsHUD = PC->GetHUD<ABrawlStarsHUD>())
-		{
-			if (APlayerState* PS = GetPlayerState())
-			{
-				BrawlStarsHUD->InitOverlay(PC, PS);
-			}
-		}
 	}
 }
 
@@ -352,8 +321,13 @@ void AHeroBase::UltimateSkillButtonOnReleased()
 		{
 			// 释放技能
 			ReleaseUltimateSkill();
+
 			// 释放技能打断回血
 			HealthComponent->MultiResetRestedTime();
+
+			//重置UltimateSkill
+			SkillLockComponent->ResetUltimateEnergyCurrent();
+
 			// 释放技能时的台词
 			PlayHeroSpeakLine(EHeroSpeakLineType::ET_UltimateSkill);
 		}
@@ -399,10 +373,7 @@ void AHeroBase::InitHealthWidget()
 
 	if (UBrawlStarsUserWidget* BSWidget = Cast<UBrawlStarsUserWidget>(HealthWidget->GetWidget()))
 	{
-		BSWidget->SetWidgetController(this);
-
-		OnHealthChanged.Broadcast(HealthComponent->GetCurrentHealth());
-		OnMaxHealthChanged.Broadcast(HealthComponent->GetMaxHealth());
+		BSWidget->Hero = this;
 	}
 }
 

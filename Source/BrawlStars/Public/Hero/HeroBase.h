@@ -4,7 +4,6 @@
 #include "GameFramework/Character.h"
 #include "DataInfo/DataInfo.h"
 #include "Data/DataType.h"
-#include "UI/WidgetController/OverlayWidgetController.h"
 #include "HeroBase.generated.h"
 
 class AAimingFlat;
@@ -40,12 +39,6 @@ public:
 	virtual void OnRep_Controller() override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UPROPERTY(BlueprintAssignable)
-	FOnAttributeChangedSignature OnHealthChanged;
-
-	UPROPERTY(BlueprintAssignable)
-	FOnAttributeChangedSignature OnMaxHealthChanged;
-
 	// 死亡
 	void HeroDie();
 	void SaveUltimateCurrent();
@@ -74,8 +67,6 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void ServerInitTeamType();
 
-	void InitializeActorInfo();
-
 protected:	
 	// 按键相关函数
 	void NormalSkillButtonOnPressed();
@@ -88,8 +79,6 @@ protected:
 	void MoveRight(float Value);
 
 private:
-	void BindCallbacksToDependencies();
-
 	// 初始化Widget
 	void InitHealthWidget();
 
@@ -116,7 +105,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<UCameraComponent> FollowCamera;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UHealthComponent> HealthComponent;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)

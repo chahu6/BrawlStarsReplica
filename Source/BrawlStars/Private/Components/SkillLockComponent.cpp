@@ -10,13 +10,20 @@ void USkillLockComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	NormalSkillCurrent = NormalSkillMax;
+	NormalSkillCurrentValue = NormalSkillMaxAmount;
 
 	GetWorld()->GetTimerManager().SetTimer(NormalSkillRechageTimer, this, &USkillLockComponent::NormalBulletRechage, 0.1f, true);
 
 	UltimateRechage.AddDynamic(this, &USkillLockComponent::RechageUltimateSkill);
 	NormalSkillFinished.AddDynamic(this, &USkillLockComponent::ResetNormalLock);
 	UltimateSkillFinished.AddDynamic(this, &USkillLockComponent::ResetUltimateLock);
+}
+
+void USkillLockComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	GetWorld()->GetTimerManager().ClearTimer(NormalSkillRechageTimer);
 }
 
 void USkillLockComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -28,6 +35,11 @@ void USkillLockComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	RechageNormalSkill();
 
 	CheckUltimateSkillReady();
+}
+
+void USkillLockComponent::ResetUltimateEnergyCurrent()
+{
+	UltimateEnergyCurrent = 0.f;
 }
 
 bool USkillLockComponent::CheckPhysicsBottonNormal(bool bPress)
@@ -84,14 +96,14 @@ bool USkillLockComponent::CheckReleaseableNormal()
 {
 	if (SkillState.bIsSkillReleaseEnable && SkillState.bIsNormalReady && SkillState.bIsNormalActivated && SkillState.bIsNormalEnd && SkillState.bIsUltimateEnd)
 	{
-		NormalSkillCurrent = FMath::Clamp(NormalSkillCurrent - 1.f, 0, NormalSkillMax);
+		NormalSkillCurrentValue = FMath::Clamp(NormalSkillCurrentValue - 1.f, 0, NormalSkillMaxAmount);
 		SkillState.bIsNormalActivated = false;
 		SkillState.bIsNormalEnd = false;
 		
 		if (GetWorld()->GetNetMode() == NM_Client)
 		{
 			ServerSetSkillReleasable(SkillState);
-			ServerSetSkillAmountCurrent(NormalSkillCurrent);
+			ServerSetSkillAmountCurrent(NormalSkillCurrentValue);
 		}
 		return true;
 	}
@@ -135,8 +147,9 @@ void USkillLockComponent::RechageUltimateSkill()
 {
 	if (UltimateEnergyCurrent != UltimateEnergyDefault)
 	{
-		UltimateEnergyCurrent = FMath::Clamp(UltimateEnergyCurrent + 1.0f, 0.0, UltimateEnergyDefault);
+		UltimateEnergyCurrent = FMath::Clamp(UltimateEnergyCurrent + 1.0f, 0.0f, UltimateEnergyDefault);
 	}
+	FOnUltimateEnergyChangedDelegate.Broadcast(UltimateEnergyCurrent / UltimateEnergyDefault);
 }
 
 void USkillLockComponent::ResetNormalLock()
@@ -160,13 +173,17 @@ void USkillLockComponent::ResetUltimateLock()
 
 void USkillLockComponent::NormalBulletRechage()
 {
-	const float Value = NormalSkillCurrent + (0.1f / NormalSKillRechageTime);
-	NormalSkillCurrent = FMath::Clamp(Value, 0.0f, NormalSkillMax);
+	if (NormalSkillCurrentValue != NormalSkillMaxAmount)
+	{
+		const float Value = NormalSkillCurrentValue + (0.1f / NormalSKillRechageTime);
+		NormalSkillCurrentValue = FMath::Clamp(Value, 0.0f, NormalSkillMaxAmount);
+	}
+	NormalSkillValueChangedDelegate.Broadcast(NormalSkillCurrentValue, NormalSkillMaxAmount);
 }
 
 void USkillLockComponent::CheckNormalSkillReady()
 {
-	if (NormalSkillCurrent >= 1.0f)
+	if (NormalSkillCurrentValue >= 1.0f)
 	{
 		SkillState.bIsNormalReady = true;
 	}
@@ -178,7 +195,7 @@ void USkillLockComponent::CheckNormalSkillReady()
 
 void USkillLockComponent::RechageNormalSkill()
 {
-	bool bIsRechage = (NormalSkillCurrent != NormalSkillMax) && SkillState.bIsNormalEnd && SkillState.bIsUltimateEnd;
+	bool bIsRechage = (NormalSkillCurrentValue != NormalSkillMaxAmount) && SkillState.bIsNormalEnd && SkillState.bIsUltimateEnd;
 	if (bIsRechage)
 	{
 		// ¶¨Ê±Æ÷ÊÇ·ñÔÝÍ£
@@ -219,13 +236,13 @@ void USkillLockComponent::CheckUltimateSkillReady()
 	}
 	else
 	{
-		SkillState.bIsUltimateReady = true;
+		SkillState.bIsUltimateReady = false;
 	}
 }
 
 void USkillLockComponent::ServerSetSkillAmountCurrent_Implementation(float SkillAmountCurrent)
 {
-	NormalSkillCurrent = SkillAmountCurrent;
+	NormalSkillCurrentValue = SkillAmountCurrent;
 }
 
 void USkillLockComponent::ServerSetSkillReleasable_Implementation(const FSkillState& SkillReleasable)

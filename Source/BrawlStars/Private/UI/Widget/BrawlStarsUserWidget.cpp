@@ -2,9 +2,3 @@
 
 
 #include "UI/Widget/BrawlStarsUserWidget.h"
-
-void UBrawlStarsUserWidget::SetWidgetController(UObject* InWidgetController)
-{
-	WidgetController = InWidgetController;
-	OnWidgetControllerSet();
-}

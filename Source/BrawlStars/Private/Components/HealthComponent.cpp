@@ -33,7 +33,7 @@ void UHealthComponent::OnRecevieDamage(AActor* DamagedActor, float Damage, const
 	if (DamagedActor == GetOwner() && DamageCauser != GetOwner() && !bIsDead)
 	{
 		CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.0f, MaxHealth);
-		OnHealthChanged.Broadcast(CurrentHealth);
+		OnHealthChangedDelegate.Broadcast(CurrentHealth);
 
 		if (CurrentHealth <= 0.0f)
 		{
@@ -53,7 +53,7 @@ void UHealthComponent::OnRecevieDamage(AActor* DamagedActor, float Damage, const
 
 void UHealthComponent::OnRep_CurrentHealth(float LastHealth)
 {
-	OnHealthChanged.Broadcast(CurrentHealth);
+	OnHealthChangedDelegate.Broadcast(CurrentHealth);
 }
 
 void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

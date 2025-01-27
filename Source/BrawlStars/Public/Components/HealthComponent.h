@@ -5,6 +5,7 @@
 #include "HealthComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, float);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChangedSignature, float, NewValue);
 
 class UDamageTextComponent;
 
@@ -20,8 +21,11 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	FOnHealthChanged OnHealthChanged;
-	FOnHealthChanged OnMaxHealthChanged;
+	UPROPERTY(BlueprintAssignable)
+	FOnHealthChangedSignature OnHealthChangedDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnHealthChangedSignature OnMaxHealthChangedDelegate;
 
 protected:
 	virtual void BeginPlay() override;
@@ -42,12 +46,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
 
-	UPROPERTY(ReplicatedUsing = OnRep_CurrentHealth)
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CurrentHealth)
 	float CurrentHealth;
 	UFUNCTION()
 	void OnRep_CurrentHealth(float LastHealth);
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	float MaxHealth;
 
 	UPROPERTY()

@@ -181,7 +181,7 @@ void AAimingFlat::ReleaseFlatSkill(const TSubclassOf<ASkillBase>& InSkillClass)
 		AWeaponBase* Weapon = Hero->GetWeapon();
 		if (IsValid(Weapon))
 		{
-			FVector SocketLocation = Weapon->GetRootComponent()->GetSocketLocation(FName("Muzzle"));
+			const FVector SocketLocation = Weapon->GetRootComponent()->GetSocketLocation(FName("Muzzle"));
 
 			FActorSpawnParameters SpawnParameters;
 			SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;

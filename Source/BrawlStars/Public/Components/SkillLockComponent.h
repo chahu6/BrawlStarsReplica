@@ -7,6 +7,8 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNormalSkillFinished);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUltimateSkillFinished);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUltimateRechage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeValueChangedSignature, float, NewValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnValuesChangedSignature, float, CurrentValue, float, MaxValue);
 
 USTRUCT(BlueprintType)
 struct FSkillState
@@ -49,6 +51,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -58,6 +61,14 @@ public:
 
 	UPROPERTY(BlueprintCallable)
 	FOnUltimateSkillFinished UltimateSkillFinished;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnValuesChangedSignature NormalSkillValueChangedDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeValueChangedSignature FOnUltimateEnergyChangedDelegate;
+
+	void ResetUltimateEnergyCurrent();
 
 private:
 	bool CheckPhysicsBottonNormal(bool bPress);
@@ -93,11 +104,11 @@ public:
 	FSkillState SkillState;
 
 protected:
-	UPROPERTY()
-	float NormalSkillMax;
+	UPROPERTY(BlueprintReadOnly)
+	float NormalSkillMaxAmount;
 
 	UPROPERTY(BlueprintReadOnly)
-	float NormalSkillCurrent;
+	float NormalSkillCurrentValue;
 
 	UPROPERTY()
 	float NormalSKillRechageTime;

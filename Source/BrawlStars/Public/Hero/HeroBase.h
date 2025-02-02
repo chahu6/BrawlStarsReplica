@@ -38,6 +38,7 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_Controller() override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	//virtual void Tick(float DeltaSeconds) override;
 
 	// 死亡
 	void HeroDie();
@@ -77,6 +78,19 @@ protected:
 
 	void MoveForward(float Value);
 	void MoveRight(float Value);
+
+	/* AI相关函数 */
+	UFUNCTION(BlueprintCallable)
+	void AINormalSkillPressed();
+
+	UFUNCTION(BlueprintCallable)
+	void AINormalSkillReleased();
+
+	UFUNCTION(BlueprintCallable)
+	void AIUltimateSkillPressed();
+
+	UFUNCTION(BlueprintCallable)
+	void AIUltimateSkillReleased();
 
 private:
 	// 初始化Widget
@@ -151,4 +165,5 @@ public:
 	FORCEINLINE AWeaponBase* GetWeapon() { return Weapon; }
 	FORCEINLINE USkillLockComponent* GetSkillLockComponent() const { return SkillLockComponent; }
 	FORCEINLINE UHealthComponent* GetHealthComponent() const { return HealthComponent; }
+	FORCEINLINE ETeamType GetTeamType() const { return TeamType; }
 };

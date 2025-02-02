@@ -24,6 +24,7 @@ AHeroBase::AHeroBase()
 	bUseControllerRotationYaw = false;
 
 	GetCapsuleComponent()->SetEnableGravity(false);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
 	TeamDecal = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TeamDecal"));
 	TeamDecal->SetupAttachment(RootComponent);
@@ -44,6 +45,7 @@ AHeroBase::AHeroBase()
 	GetMesh()->SetRelativeRotation(FRotator(0.0, -90.0, 0.0));
 	GetMesh()->SetRelativeLocation(FVector(0.0, 0.0, -90.0));
 	GetMesh()->SetRelativeScale3D(FVector(0.14));
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
 	HealthComponent->SetIsReplicated(true);
@@ -363,6 +365,26 @@ void AHeroBase::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		AddMovementInput(Direction, Value);
 	}
+}
+
+void AHeroBase::AINormalSkillPressed()
+{
+	NormalSkillButtonOnPressed();
+}
+
+void AHeroBase::AINormalSkillReleased()
+{
+	NormalSkillButtonOnReleased();
+}
+
+void AHeroBase::AIUltimateSkillPressed()
+{
+	UltimateSkillButtonOnPressed();
+}
+
+void AHeroBase::AIUltimateSkillReleased()
+{
+	UltimateSkillButtonOnReleased();
 }
 
 void AHeroBase::InitHealthWidget()

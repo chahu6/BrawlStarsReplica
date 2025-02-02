@@ -122,13 +122,13 @@ protected:
 	float UltimateEnergyCurrent;
 
 	UPROPERTY()
-	bool bNormalButtonPressed;
+	bool bNormalButtonPressed = false;
 
 	UPROPERTY()
 	bool bNormalButtonReleased = true;
 
 	UPROPERTY()
-	bool bUltimateButtonPressed;
+	bool bUltimateButtonPressed = false;
 
 	UPROPERTY()
 	bool bUltimateButtonReleased = true;

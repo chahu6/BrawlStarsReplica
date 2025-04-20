@@ -200,10 +200,10 @@ struct FAimInfo
 	UPROPERTY()
 	FVector2D RealViewportCenterMousePoint;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	float AimDistance;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	float AimRotationYaw;
 };
 

@@ -26,7 +26,7 @@ void ASkillBase::BeginPlay()
 	UDataTable* DataTable = Setting->SkillDataTable.LoadSynchronous();
 	RowNames.Empty();
 	UDataTableFunctionLibrary::GetDataTableRowNames(DataTable, RowNames);
-	for (auto& Elem : RowNames)
+	for (FName Elem : RowNames)
 	{
 		FSkillAttribute* SkillAttribute = DataTable->FindRow<FSkillAttribute>(Elem, TEXT("AHeroBase"));
 		if (GetClass() == SkillAttribute->SkillType)

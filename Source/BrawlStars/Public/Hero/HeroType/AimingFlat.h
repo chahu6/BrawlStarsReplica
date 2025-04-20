@@ -43,7 +43,7 @@ public:
 
 	void ReleaseFlatSkill(const TSubclassOf<ASkillBase>& InSkillClass);
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	FAimInfo AimingInfo;
 
 protected:

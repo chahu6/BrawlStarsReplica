@@ -22,7 +22,6 @@ protected:
 	virtual void ActiveUltimateSkill() override;
 	virtual void ReleaseUltimateSkill() override;
 
-
 private:
 	FOnMontageEnded MontageEndedDelegate;
 
